@@ -1,0 +1,23 @@
+.bg-warning{
+    background-color: #ffe084 !important;  
+}
+
+
+select,select.form-control, input[type=text],input[type=password]{
+    background-color:  #ffe084 !important;
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+input[type=text], select.form-control {
+    font-weight: bold;
+    color: black;
+}
+ 
+select:focus{
+    border: 2px solid red;
+}
+.taxipanel{
+    border: 1px solid #9c8a43;
+    margin-right: 1px;
+}
