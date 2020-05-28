@@ -124,7 +124,7 @@ class Usuario extends CI_Controller {
 	}
 
 
-	public function create( $tipo){
+	public function create( $tipo="c"){
 		 
 		$this->load->library("form_validation");
 			$this->form_validation->set_error_delimiters('<p class="text-danger font-weight-bold">', '</p>');

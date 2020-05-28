@@ -30,7 +30,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   
 	<div class="container-fluid m-1" > 
 				
-				<?php   $this->load->view("plantillas/user_data_panel") ; ?>
+				<?php   $this->load->view("plantillas/user_data_panel/index") ; ?>
 
 				<div class="row border border-secondary" >
 					<div class="col-md-2 mr-md-0 pr-md-0 pl-0  border border-secondary d-flex  flex-column align-items-center"> 
@@ -125,8 +125,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 	<script type="text/javascript" src= "<?= base_url("/assets/jquery/jquery-3.4.1.min.js") ?>" ></script>
-
 	<script src="<?= base_url("/assets/bootstrap/bootstrap.min.js")?>"  ></script>
+
+
 	<script>
 
  

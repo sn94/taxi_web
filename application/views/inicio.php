@@ -48,10 +48,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<div id="container-fluid">
 		<div class="row">
 			<div class="offset-3 col-3 offset-sm-4 col-sm-2 offset-md-5 col-md-1">
-				<a href="welcome/registro_visitante/c" class="btn btn-info">BUSCAR</a>
+				<?php
+				if( $this->session->userdata("usuario") || $this->session->has_userdata("tipo") ){ ?>
+				<a href="proveedor/index" class="btn btn-info">BUSCAR</a>
+				<?php  }else{ ?>
+
+				<a href="welcome/sel_modo_ingreso/c" class="btn btn-info">BUSCAR</a>
+				
+				<?php } ?>
+				
 			</div>
 			<div class="col-3 col-sm-2 col-md-1">
-				<a  href="welcome/registro_visitante/p" class="btn btn-info">OFRECER</a>
+				<?php if( $this->session->userdata("usuario") || $this->session->has_userdata("tipo") ){ ?>
+				<a href="cliente/index" class="btn btn-info">OFRECER</a>
+				<?php  }else{ ?>
+
+				<a href="welcome/sel_modo_ingreso/p" class="btn btn-info">OFRECER</a>
+				
+				<?php } ?>
+
+				 
 			</div>
 		</div> 
 	</div>

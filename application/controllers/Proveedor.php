@@ -18,7 +18,14 @@ class Proveedor extends CI_Controller {
 			$usu= $this->Usuario_model->get( $cedula);
 			$this->load->view('proveedor/index', array("list"=> $dts, "usuario"=> $usu )  );
 		}else{
-			$this->load->view('proveedor/index', array("list"=> $dts)  );
+
+			if( $this->session->userdata("tipo") =="v" ){//Si fuera visitante
+				 
+				$this->load->view('proveedor/index', array("list"=> $dts )  );
+			}else{
+				$this->load->view('proveedor/index', array("list"=> $dts)  );
+			} 
+ 
 		} 
 	
 	}

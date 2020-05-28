@@ -15,7 +15,7 @@
 					</div>
 					<div class="col-md-4  border border-secondary">
 						<div class="row">Visita: 15000</div>
-						<div class="row bg-warning">Soy Cliente</div>
+						<div class="row bg-warning"><?= $this->session->userdata("tipo")=="c"?"Soy Cliente":"Soy Proveedor" ?> </div>
 						<div class="row">N° 1</div>
 						<div class="row bg-warning">Mensajes</div>
 					</div>

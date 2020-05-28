@@ -8,6 +8,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<title>TAXICARGA-PROVEEDORES DISPONIBLES </title>
 	<link rel="stylesheet" href="<?= base_url("/assets/bootstrap/bootstrap.min.css") ?>" /> 
 	<link rel="stylesheet" href="<?= base_url("/assets/taxi.css") ?>" /> 
+
     <style>
     
     .container {
@@ -35,17 +36,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<?php  
 						echo form_open("welcome/registro_visitante/$modo") ; 
 					?>
-						<label for="departamento">Departamento:</label>
-						<input class="form-control"  type="text" name="depart">
+						<label for="departamento">Departamento:</label> 
+						<select class="form-control" name="depart" id="o_depart"  onchange="City_data.actualizarListas('#o_depart','#o_ciudad')" >
+
+						</select>
 						<label for="ciudad">Ciudad:</label>
-						<input class="form-control" type="text" name="ciudad">
+						<select class="form-control" name="ciudad" id="o_ciudad"></select>
+
 						<label for="barrio">Barrio:</label>
 						<input class="form-control" type="text" name="barrio">
-						<label for="celular">Celular:</label>
-						<input class="form-control" type="text" name="celular">
-						<label for="cedula">C&eacute;dula:</label>
-						<input class="form-control" type="text" name="cedula">
-						<?= form_error('cedula'); ?>
+						 
+						 
 	
 						<input type="hidden" name="modo" value="<?=$modo?>">
 						<br>
@@ -66,20 +67,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 	<script type="text/javascript" src= "<?= base_url("/assets/jquery/jquery-3.4.1.min.js") ?>" ></script>
-
 	<script src="<?= base_url("/assets/bootstrap/bootstrap.min.js")?>"  ></script>
+	<script src="<?= base_url("/assets/citydata.js") ?>" ></script>
 	<script>
+		
+		City_data.datosGeo( "#o_depart","#o_ciudad");  
 
- 
 
-		var ProveedorSeleccionado= "";
-
-		function obtenerNombreDeProveedor( arg ){ 	ProveedorSeleccionado=  arg.target.parentNode.children[0].innerText ; }
-
-		$('#Modal1').on('show.bs.modal', function (e) {
-			$("#proveedor-nick").text( '"'+ ProveedorSeleccionado +'"'); 
-		});
-			
+		
 	</script>
 
 </body>

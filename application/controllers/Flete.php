@@ -25,9 +25,11 @@ class Flete extends CI_Controller {
 		
 	
 		if(  $this->input->method(FALSE)	 == "post"){
-			if($this->Flete_model->add())
+			if($this->Flete_model->add()){
 				$this->load->view("plantillas/success", array("mensaje"=>"Flete registrado!")); 
-			else
+				//enviar notificaciones a proveedores en expectativa
+				
+			}else
 				$this->load->view("plantillas/error", array("mensaje"=>"Hubo un error en el servidor, vuelva a intentar")); 
 			
 		}else{

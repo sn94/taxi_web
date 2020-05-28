@@ -7,34 +7,23 @@
     <div class="navbar-collapse collapse show" id="navbarColor01" style="">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">INICIO <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/taxi_web/welcome">INICIO <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
        VISITANTE
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Mi cuenta</a>
-           <a class="dropdown-item" href="/taxi_web/cliente/pedidos_realizados">Pedidos Recibidos</a>
+          <a class="dropdown-item" href="<?= base_url("usuario/create/c")?>">Registrarme como cliente</a>
+          <a class="dropdown-item" href="<?= base_url("usuario/create/p")?>">Registrarme como proveedor</a>
+           
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="<?= base_url("usuario/sign_out")?>">Cerrar sesi&oacute;n</a>
+          <a class="dropdown-item" href="<?= base_url("usuario/sign_in")?>">Iniciar sesi&oacute;n</a>
         </div>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Notificaciones <span class="badge badge-secondary">0</span>
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a data-toggle="modal" data-target=".modal-proveedor-precio" class="dropdown-item" href="#">Notificacion 1</a>
-           <a class="dropdown-item" href="/taxi_web/cliente/pedidos_realizados">Pedidos realizados</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Cerrar sesi&oacute;n</a>
-        </div>
-      </li>
+       
 
-       <li class="nav-item">
-          <a class="nav-link" href="<?= base_url("flete/index") ?>">Pedir taxicarga</a>
-        </li>
+       
  
 
       <li class="nav-item">

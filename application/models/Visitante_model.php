@@ -11,10 +11,12 @@ class Visitante_model extends CI_Model {
 
 
 
-     public function add(){ 
-
+     public function add(){  
+        //registrar visitante
       $datos= $this->input->post();
-      $res= $this->db->insert('visitante', $datos);
+      $datos['ip']=   $this->input->ip_address(); 
+      $res= $this->db->insert('visitas', $datos);
+       
       return $res;
      }
 

@@ -13,12 +13,18 @@ class Cliente extends CI_Controller {
 	{
 		$dts= $this->Usuario_model->list_clientes();
 		//obtener datos de usuario actual
-		if( $this->session->has_userdata("usuario") ){
+		if( $this->session->has_userdata("usuario") ){ 
+
 			$cedula= $this->session->userdata("id") ;
 			$usu= $this->Usuario_model->get( $cedula);
 			$this->load->view('cliente/index', array("list"=> $dts, "usuario"=> $usu )  );
 		}else{
-			$this->load->view('cliente/index', array("list"=> $dts)  );
+			if( $this->session->userdata("tipo") =="v" ){//Si fuera visitante
+				 
+				$this->load->view('cliente/index', array("list"=> $dts )  );
+			}else{
+				$this->load->view('cliente/index', array("list"=> $dts)  );
+			} 
 		}
 	 
 	}
