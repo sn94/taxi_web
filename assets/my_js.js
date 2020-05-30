@@ -7,20 +7,23 @@ var listaDeVendedores= [];
  * @param {} ev 
  * @param {*} div  El nombre del elemento contenedor, dentro del cual se mostraran los resultados
  */
-function peticion(ev, div){
+function peticion(ev, div, action= undefined){
     ev.preventDefault();
 
-    if( confirm("Continuar?")){
+    let default_action= function( res ){
+        $(  div ).html( res );
+        ev.target.reset();
+    };
+    if( action == undefined) action= default_action;
+
+    if( confirm("Continuar?")){ 
         let ruta=  ev.target.action;
         let metodo=  ev.target.method; 
         $.ajax( {
             url: ruta ,
              method: metodo, 
             data: $(ev.target).serialize(),
-            success: function (res){
-                $(  div ).html( res );
-                ev.target.reset();
-            } 
+            success:  action 
         });
     }
 }/**************************** */

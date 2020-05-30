@@ -3,73 +3,90 @@
 
   var Fcm= {
 
-    inicializado: false,
+    
     messaging: undefined,
     init: function(){
-        if( this.inicializado)  return;
-                // Initialize Firebase
-                firebase.initializeApp(  
-                    {
-                apiKey: "AIzaSyB7ib73Cavw4hWCzHKyJcom54RPwkWrLfs",
-                authDomain: "taxi-cargas.firebaseapp.com",
-                databaseURL: "https://taxi-cargas.firebaseio.com",
-                projectId: "taxi-cargas",
-                storageBucket: "taxi-cargas.appspot.com",
-                messagingSenderId: "60936083686",
-                appId: "1:60936083686:web:e8e8240361edaec6c64327"
-                }
-                );
-                this.inicializado= true;
-                this.messaging=  firebase.messaging();
-                this.registrarServiceWorker();
-                this.eventos();
-                
-        
-      
-    },
-    
-    requestPermission: function( to_do, to_do_instead) {
 
-        if (!('Notification' in window)) {
-            // el navegador no soporta la API de notificaciones
-                            alert('Su navegador no soporta la API de Notificaciones :(');
-                            return;
-                        }
-        console.log('Requesting permission...');
-        // [START request_permission]
-        Notification.requestPermission().then((permission) => {
-          if (permission === 'granted') {
-            console.log('Notification permission granted.');
-            this.init();
-            to_do();
-    
-          } else {
-            Notification.requestPermission();
-            console.log('Unable to get permission to notify.');
+       
+        if( !firebase.apps.length ){ 
+       console.log("inicializando..");
+            // Initialize Firebase
+            firebase.initializeApp(  
+              {
+            apiKey: "AIzaSyB7ib73Cavw4hWCzHKyJcom54RPwkWrLfs",
+            authDomain: "taxi-cargas.firebaseapp.com",
+            databaseURL: "https://taxi-cargas.firebaseio.com",
+            projectId: "taxi-cargas",
+            storageBucket: "taxi-cargas.appspot.com",
+            messagingSenderId: "60936083686",
+            appId: "1:60936083686:web:e8e8240361edaec6c64327"
+            }
+            );
+
+            this.messaging=  firebase.messaging();
+            this.registrarServiceWorker();
+            this.eventos(); 
+          }else{
+            this.messaging=  firebase.messaging(); 
           }
-        });
-        // [END request_permission]
-      },
-    registrarServiceWorker: function(){
-                let messag= this.messaging;
-                this.messaging
-                .requestPermission()
-                .then(function () {
-                    console.log( "messaging", messag);
-                console.log("Have permission");
-                if ('serviceWorker' in navigator) {
-                   
-                    navigator.serviceWorker.register('/taxi_web/firebase-messaging-sw.js')
-                    .then(function(registration) {
-                        console.log( "messaging", "antes de actualizar sw");
-                    registration.update();
-                    messag.useServiceWorker(registration); 
+               
+              
+    },
+    hasNotificationSupport: function(){
+      
+        if (!('Notification' in window)) {
+          // el navegador no soporta la API de notificaciones
+          alert('Su navegador no soporta la API de Notificaciones :('); 
+          return  false;
+        }else{   return  true;   }//end else 
+    },
 
-                        console.log('Registration successful, scope is:', registration.scope);
-                    }).catch(function(err) {
-                        console.log('Service worker registration failed, error:', err);
-                    });
-                }
+    hasNotificationPermission: function( ){
+      return new Promise( (good, bad )=>{
+        if( this.hasNotificationSupport() ){
+         return  Notification.requestPermission().
+          then(  function(permission){  if(permission === 'granted') good(); else bad();     } ).
+          catch( bad );
+        }else  return bad(); 
+      });
+     
+    },
+
+    requestPermissionToGetToken: function( ) {
+
+      let contextoInner=  this;
+       return this.hasNotificationPermission().
+          then( function(){ 
+            contextoInner.init();//inicializar FCM 
+            return contextoInner.registrarServiceWorker();
+          
+          } );
+
+      },
+
+
+    registrarServiceWorker: function(  to_do){
+        let messag= this.messaging;// objeto proxy
+        //retorna una promesa
+        return this.messaging
+          .requestPermission()
+          .then(function () {
+                     
+              if ('serviceWorker' in navigator) {
+                   //promesa
+                  return navigator.serviceWorker.register('/taxi_web/firebase-messaging-sw.js')
+                  .then(function(registration) { 
+                      registration.update();  messag.useServiceWorker(registration); 
+                      console.log('Registration successful, scope is:', registration.scope);
+                      //otra promesa, obtiene el token
+                     //------- messag.getToken().then(to_do); 
+                     return true;
+                    }).catch(function(err) { 
+                      console.log('Service worker registration failed, error:', err.code);
+                      
+                      return ( err.code == "messaging/use-sw-after-get-token"); 
+                      });
+                }else return false;
             }  );
             
             // [END get_messaging_object]
@@ -122,6 +139,7 @@ isTokenSentToServer:   function () {
             // [START refresh_token]
             // Callback fired if Instance ID token is updated.
             this.messaging.onTokenRefresh(() => {
+              console.log(this.messaging);
                 messaging.getToken().then((refreshedToken) => {
                 console.log('Token refreshed.');
                 // Indicate that the new Instance ID token has not yet been sent to the
@@ -248,7 +266,7 @@ enviar_mensajes: function (){
 obtenerToken:   function (){
     // Delete Instance ID token.
     // [START delete_token]
-    
+   
   return  this.messaging.getToken();
 }
 
@@ -281,25 +299,7 @@ obtenerToken:   function (){
 
 
 
-  function resetUI() { 
-    // [START get_token]
-    // Get Instance ID token. Initially this makes a network call, once retrieved
-    // subsequent calls to getToken will return from cache.
-    messaging.getToken().then((currentToken) => {
-      if (currentToken) {
-        sendTokenToServer(currentToken); 
-      } else {
-        // Show permission request.
-        console.log('No Instance ID token available. Request permission to generate one.');
-        
-        setTokenSentToServer(false);
-      }
-    }).catch((err) => {
-      console.log('An error occurred while retrieving token. ', err); 
-      setTokenSentToServer(false);
-    });
-    // [END get_token]
-  }
+  
 
 
   

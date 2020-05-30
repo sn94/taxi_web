@@ -5,7 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <head>
 	<meta charset="utf-8"> 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/taxi_web/manifest.json">
 
 	<title>TAXICARGA-PROVEEDORES DISPONIBLES </title>
 	<link rel="stylesheet" href="<?= base_url("/assets/bootstrap/bootstrap.min.css") ?>" /> 
@@ -40,8 +40,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
 <div class="container">
 
-    <div id="mensaje" >  </div>
-    <?php   echo form_open("usuario/create/$tipo", array("onsubmit"=>"prepararDatosGrabar(event)")) ;  ?>
+   
+    <?php   echo form_open("usuario/create/$tipo") ;  ?>
         <div class="row">
                        
             <div class="col-md-6">
@@ -82,6 +82,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     </label>
                 </div>
+                <div id="mensaje" >  </div>
                 <button type="submit" class="btn btn-success btn-sm d-block invisible">ENVIAR</button>
                               
             </div>
@@ -109,26 +110,48 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 //permiso para recibir notificaciones
 function permiso( ev){
-
-    if( ev.target.checked ){
-        let hacer= function(){
-        $("button[type=submit]").removeClass("invisible");
-        $("button[type=submit]").addClass("visible");
-            
+ 
+    if( ev.target.checked ){//casilla marcada
+        //acciones- de espera
+        let waiting= function(){
+            $("#mensaje").html("Procesando datos...");
         };
-        let hacer_= function(){
-            $("#defaultCheck1").prop("checked", false);
-
-        };
-
-        //solicita permiso al usuario para enviarle notificaciones
-        //luego se instala el service worker
-        Fcm.requestPermission( hacer, hacer_ );
-    }else{
-        alert("Para continuar con el registro, habilite las notificaciones por favor");
-        $("button[type=submit]").removeClass("visible");
-        $("button[type=submit]").addClass("invisible");
         
+        //acciones - obtencion exitosa del token
+        let hacer=    function( ag) { 
+           //asignar valor de token a campo
+            $("input[name=id_token]").val(  ag); 
+            //mostrar boton
+            $("button[type=submit]").removeClass("invisible"); $("button[type=submit]").addClass("visible");  
+            //borrar mensajes
+            $("#mensaje").html("");
+        }; 
+        //acciones - error al obtener token
+        let hacer_= function(){
+            //borrar mensajes
+            $("#mensaje").html("Hubo un error al procesar los datos");
+            //desmarcar casilla
+            $("#defaultCheck1").prop("checked", false); 
+            //ocultar boton de envio
+            $("button[type=submit]").removeClass("visible");  $("button[type=submit]").addClass("invisible");
+        };
+
+        //verifica/solicita permiso al usuario para enviarle notificaciones
+        //luego se instala el service worker
+
+        waiting();
+        Fcm.requestPermissionToGetToken().
+        then( function( ar){ //todo resulto bien, podemos obtener el token
+            if( ar)    Fcm.obtenerToken().then(  hacer );
+            else hacer_();
+         } ).
+        catch(  hacer_);
+       
+       
+    }else{//casilla desmarcada
+        alert("Para continuar con el registro, habilite las notificaciones por favor");
+        //ocultar boton de envio
+        $("button[type=submit]").removeClass("visible");   $("button[type=submit]").addClass("invisible");     
     }
    
 }
@@ -136,19 +159,7 @@ function permiso( ev){
 
   
 
-
-    function prepararDatosGrabar( ev){
-        //obtener token y adjuntarlo para enviarlo con el formulario
-        Fcm.getToken().
-        then( function( ag) {
-            $("input[name=id_token]").val(  ar);
-            peticion( ev, "#mensaje");
-
-        }).catch( function(){
-            console.log("Error al obtener token de registro");
-            peticion( ev, "#mensaje");
-        });
-    }
+ 
 
 			
 	</script>

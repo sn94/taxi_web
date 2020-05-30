@@ -27,6 +27,36 @@ class Usuario extends CI_Controller {
 	 * inicio de sesion
 	 */
 
+	 private function internal_sign_in(   $usr, $passwrd){
+
+		//OBTENER NRO REG DE USUARIO a partir de su NICK
+		$d_u= $this->Usuario_model->getByName( $usr);
+		//VERIFICAR EXISTENCIA DE USUARIO
+		if( is_null( $d_u) ){//no existe
+			$this->load->view("login/index", array("errorSesion"=> "El usuario ->$usr<- no existe") );
+		}else{
+			$id_usr=$d_u->id_usu; 
+			$nom= $d_u->nombre; 
+			$pass= $passwrd;
+			$tipo= $d_u->modo; 
+
+			// VERIFICACION DE contrasenha correcta
+			if( $this->Usuario_model->correctPassword( $pass, $usr) ){
+				$newdata = array( 	'id' => $id_usr, 'usuario'  => $usr, 'nombres' => $nom,'tipo'     => $tipo);
+				$this->session->set_userdata( $newdata);//CREACION DE LA SESION 
+
+				if( $tipo=="c")
+				redirect(  base_url("proveedor/index") ); 
+				else
+				redirect(  base_url("cliente/index") ); 
+			}else{
+			//	echo json_encode(  array('error' => "Clave incorrecta" )); 
+				$this->load->view("login/index", array("errorSesion"=> "Clave incorrecta") );
+			}
+		}//end else
+	}
+
+
 	public function sign_in(){
 	
 		$this->load->helper("form");
@@ -37,31 +67,8 @@ class Usuario extends CI_Controller {
 		 }else{
 				//DATOS DE SESIOn
 				$usr= $this->input->post("usuario");
-				//OBTENER NRO REG DE USUARIO a partir de su NICK
-				$d_u= $this->Usuario_model->getByName( $usr);
-				//VERIFICAR EXISTENCIA DE USUARIO
-				if( is_null( $d_u) ){//no existe
-					$this->load->view("login/index", array("errorSesion"=> "El usuario ->$usr<- no existe") );
-				}else{
-					$id_usr=$d_u->id_usu; 
-					$nom= $d_u->nombre; 
-					$pass= $this->input->post("passw");
-					$tipo= $d_u->modo; 
-	
-					// VERIFICACION DE contrasenha correcta
-					if( $this->Usuario_model->correctPassword( $pass, $usr) ){
-						$newdata = array( 	'id' => $id_usr, 'usuario'  => $usr, 'nombres' => $nom,'tipo'     => $tipo);
-						$this->session->set_userdata( $newdata);//CREACION DE LA SESION 
-
-						if( $tipo=="c")
-						redirect(  base_url("proveedor/index") ); 
-						else
-						redirect(  base_url("cliente/index") ); 
-					}else{
-					//	echo json_encode(  array('error' => "Clave incorrecta" )); 
-						$this->load->view("login/index", array("errorSesion"=> "Clave incorrecta") );
-					}
-				}//end else
+				$pass=  $this->input->post("passw");
+			$this->internal_sign_in( $usr, $pass);
 				
 		 }//END ANALISIS DE PARAMETROS
 	}//END SIGN IN
@@ -126,23 +133,20 @@ class Usuario extends CI_Controller {
 
 	public function create( $tipo="c"){
 		 
-		$this->load->library("form_validation");
-			$this->form_validation->set_error_delimiters('<p class="text-danger font-weight-bold">', '</p>');
-			$this->form_validation->set_rules( "cedula","cedula","required", array('required' => 'Proporcione el numero de cedula') );
-			$this->load->helper("form");
+	$this->load->helper("form");
 
-		if( $this->form_validation->run() == FALSE ){ 
+		if(   $this->input->method(FALSE)	 == "post" ){ 
 			 
-			$this->load->view("usuario/create", array("tipo"=> $tipo)  );
-		}else{ 
-			$this->Usuario_model->add();
-			if(  $tipo == "c"){
-				redirect(  base_url("proveedor") );
-			}
-			if(  $tipo == "p"){
-				redirect(  base_url("cliente") );
+			if( $this->Usuario_model->add() ){
+				$this->internal_sign_in( $this->input->post("nick"),
+										$this->input->post("passw"));
+			}else{
+				$this->load->view("usuario/error", array("mensaje"=> "Hubo un error al registrar sus datos. Vuelva a intentar")  );
 			}
 			
+			
+		}else{  
+			$this->load->view("usuario/create", array("tipo"=> $tipo)  );
 			//$this->load->view("plantillas/success", array("mensaje"=>"Datos de Usuario agregado"));
 		}
 

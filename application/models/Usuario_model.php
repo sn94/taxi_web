@@ -15,7 +15,7 @@ class Usuario_model extends CI_Model {
         $datos= $this->input->post(); 
         //hash
         $datos['passw']=   password_hash($datos['passw'],  PASSWORD_DEFAULT );
-        $this->db->insert('usuario', $datos);   
+        return $this->db->insert('usuario', $datos);   
      }
 
   
