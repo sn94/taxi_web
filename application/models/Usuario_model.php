@@ -33,6 +33,10 @@ class Usuario_model extends CI_Model {
       return $dts;
   }
 
+  public  function add_visit_log($data){
+   $this->db->insert('visitas', $data);
+  //var_dump(  $this->db->last_query()   );
+}
 
      public function list( $opc= "0"){
         $params= NULL;

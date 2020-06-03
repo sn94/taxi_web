@@ -7,6 +7,7 @@ class Usuario extends CI_Controller {
 		parent::__construct(  );
 		date_default_timezone_set("America/Asuncion");
 		$this->load->model("Usuario_model");
+		$this->load->library("firebase_req");
 	 }
 
 	public function index()
@@ -17,9 +18,7 @@ class Usuario extends CI_Controller {
 			$this->load->view('usuario/index', array("list"=> $dts)  );
 		}else {
 			redirect(  base_url("welcome") );
-		}
-		
-	
+		} 
 	}
 
 
@@ -68,7 +67,9 @@ class Usuario extends CI_Controller {
 				//DATOS DE SESIOn
 				$usr= $this->input->post("usuario");
 				$pass=  $this->input->post("passw");
-			$this->internal_sign_in( $usr, $pass);
+				$this->internal_sign_in( $usr, $pass);
+				//usuario a activo
+				
 				
 		 }//END ANALISIS DE PARAMETROS
 	}//END SIGN IN
@@ -85,6 +86,59 @@ class Usuario extends CI_Controller {
 	}
 
 	 
+
+	public function  read_user_tokens(){
+		$fichero= fopen("online_users.txt", "r");
+		$registration_ids=[];
+		while(  !feof($fichero)){
+			$linea= fgets( $fichero);
+			$datos= explode(",",  $linea); 
+			if( sizeof( $datos) > 1){
+				array_push( $registration_ids,   $datos[0]);
+			}  
+			 
+		}
+		fclose($fichero); 
+		return  $registration_ids;
+	}
+
+	private function add_visit_log($data){
+		$this->Usuario_model->add_visit_log( $data); 
+	}
+
+
+	private function add_user_log( $data){
+		$fichero= fopen("online_users.txt", "a");
+		$Cadena=$data['token'].",".$data['id'];
+		fputs(  $fichero, $Cadena); 
+		fputs( $fichero, chr(13).chr(10) );
+		fclose( $fichero);
+	}
+
+	public function user_status( $online){
+		//1 online  0 offline
+		$token= $this->input->post("token");
+		$ip= $this->input->ip_address();
+		$id_usuario=  $this->session->userdata("id"); 
+		$nick_usuario=  $this->session->userdata("usuario"); 
+		//navegador sistema operativo
+		$navegador= $this->input->user_agent();
+		//fecha-hora
+		$fecha= date("Y/m/d H:i:s");
+		/**********grabar en archivo de seguimiento de usuarios */
+		$DATOS= array( "ip"=>$ip, "id_us"=>$id_usuario, "browser"=> $navegador, "fecha_hora"=>$fecha);
+		$this->add_visit_log(  $DATOS );
+		$this->add_user_log(  array("token"=> $token, "id"=>$id_usuario) ) ;
+		/***Notificar a otros usuarios */
+		$tokens=$this->read_user_tokens();
+		$datos_noti= array("gui_user_refresh"=>"yes","user"=>$nick_usuario,"on"=>"1");
+		if( sizeof($tokens) > 0)
+	{	
+		$this->firebase_req->send_message_one_device(   $tokens, $datos_noti);
+	} 	 	
+	}
+
+
 	public function passChange(){ 
 		if( sizeof($this->input->post()) )
 		{ 

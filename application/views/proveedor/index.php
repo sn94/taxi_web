@@ -27,20 +27,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <?php  $this->load->view("plantillas/header/index"); ?>
 <main role="main" class="flex-shrink-0 align-content-center"  >
-  
+ 
 	<div class="container-fluid m-1" > 
 				
 				<?php   $this->load->view("plantillas/user_data_panel/index") ; ?>
 				<div class="row border border-secondary" >
 					<div class="col-md-2 mr-md-0 pr-md-0 pl-0  border border-secondary d-flex  flex-column align-items-center"> 
 						<div style="flex-grow: 2; width: 100%;">
-							<table class="table table-striped table-sm" style="flex-grow: 2; flex-shrink: 2;">
+							<table  id="online-users" class="table table-striped table-sm" style="flex-grow: 2; flex-shrink: 2;">
 								<thead><th>USUARIOS</th></thead>
-								<tbody>
-									<tr><td>Dany</td></tr>
-									<tr><td>Nery</td></tr>
-									<tr><td>Sonia</td></tr>
-									<tr><td>Javier</td></tr>
+								<tbody> 
 								</tbody>
 							</table>
 						</div>
@@ -57,9 +53,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<table class="table table-striped table-hover">
 							<thead class="thead-dark"><th>Proveedor</th><th>Kgs</th><th>Tipo móvil</th><th>Ayudante</th><th>Horario</th></thead>
 							<tbody>
-								<tr data-toggle="modal" data-target=".modal-proveedor-sel"  class="table-success" onclick="obtenerNombreDeProveedor(event)"><td >Nery</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
+								<tr data-toggle="modal" data-target=".modal-proveedor-sel"  class="table-success" onclick="obtenerNombreDeProveedor(event)"><td >Fidencio</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
 								<tr class="table-success"><td>Jazmin</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
-								<tr class="table-danger"><td>Marcelo</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
+								<tr class="table-danger"><td>Ruben</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
 								<tr class="table-warning"><td>Junior</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
 								<tr class="table-warning"><td>Oscar</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
 							</tbody>
@@ -123,12 +119,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script type="text/javascript" src= "<?= base_url("/assets/jquery/jquery-3.4.1.min.js") ?>" ></script>
 	<script src="<?= base_url("/assets/bootstrap/bootstrap.min.js")?>"  ></script>
-
+	
+    <script src="<?= base_url("/firebase-app.js")?>"  ></script>
+	<script src="<?= base_url("/firebase-messaging.js")?>"  ></script>
+	<script src="<?= base_url("/assets/fcm/init.js")?>"  ></script>
+	<script src="<?= base_url("/assets/gui_refresh/refresh.js")?>"  ></script>
 
 
 	<script>
 
+	//Usuario ingresa a la ventana, abandona la ventana
+$(document).ready( function(){
+	$(window).focus(  function(){
+		activarUsuario();
+	});
+	$(window).blur(  function(){
+console.log("blur");
+	});
+
+});
  
+
+
+
+		Fcm.init();
 
 		var ProveedorSeleccionado= "";
 

@@ -230,7 +230,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="<?= base_url("/assets/leafletmap/leaflet.js") ?>" ></script>
 	<script src="<?= base_url("/assets/mymaps.js") ?>" ></script>
 	<script src="<?= base_url("/assets/citydata.js") ?>" ></script>
-	<script src="<?= base_url("/assets/fcm/receive_msg_front.js") ?>" ></script>
+	 
 	<script src="<?= base_url("/assets/my_js.js") ?>" ></script>
  
 

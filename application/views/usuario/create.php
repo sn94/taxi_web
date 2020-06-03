@@ -9,7 +9,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<title>TAXICARGA-PROVEEDORES DISPONIBLES </title>
 	<link rel="stylesheet" href="<?= base_url("/assets/bootstrap/bootstrap.min.css") ?>" /> 
-	<link rel="stylesheet" href="<?= base_url("/assets/taxi.css") ?>" /> 
+    <link rel="stylesheet" href="<?= base_url("/assets/taxi.css")."?v=".rand() ?>" /> 
+    <link rel="stylesheet" href="<?= base_url("/assets/jqueryui/jquery-ui.css") ?>" />
+
     <style>
     
     .container {
@@ -50,18 +52,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 Contrase&ntilde;a:<input class="form-control form-control-sm form-control-md mt-1" type="password" placeholder="Clave" name="passw">
                 <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Nombres" name="nombre">
                 <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Apellidos" name="apellido">
-                <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Depart.:" name="depart">
-                <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Ciudad" name="ciudad">
+                <select class="form-control form-control-sm form-control-md mt-1"    id="depart"  onchange="City_data.actualizarListas('#o_depart','#o_ciudad')" ></select>
+                <input type="hidden" name="depart"> 
+
+                <select class="form-control form-control-sm form-control-md mt-1"   id="ciudad"></select>
+                <input type="hidden" name="ciudad"> 
+
                 <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Barrio" name="barrio">
                 <br>
                 <!--TOKEN DE REGISTRO CLOUD MESSAGING -->
                 <input type="hidden" name="id_token">
+                <input type="hidden" name="modo" value="<?=  $tipo ?>">
         
             </div>
             <div class="col-md-6"> 
                             
-                <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Telefono" name="telefono">
-                <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Celular" name="celular">
+                <input class="form-control form-control-sm form-control-md mt-1" type="tel" placeholder="Telefono" name="telefono">
+                <input class="form-control form-control-sm form-control-md mt-1" type="tel" placeholder="Celular" name="celular">
                 <label for="est_civil"  >Estado civil:</label>
                 <select name="est_civil" id="" class="form-control form-control-sm form-control-md">
                     <option value="S">SOLTERO/A</option>
@@ -69,8 +76,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <option value="CO">CONCUBINO/A</option>
                     <option value="V">VIUDO/A</option>
                 </select>
-                <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Fecha de nacimiento" name="fecha_nac">
-                <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Nro. de cedula" name="cedula">
+                <input class="form-control form-control-sm form-control-md mt-1" type="text" readonly placeholder="Fecha de nacimiento" name="fecha_nac" id="fechanac">
+                <input class="form-control form-control-sm form-control-md mt-1" type="number" placeholder="Nro. de cedula" name="cedula" oninput="numericInput(event)">
                 <?= form_error('cedula'); ?>
 
                 <!--AUTORIZAR NOTIFICACIONES -->
@@ -93,7 +100,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           
 				 
 </div><!-- end container fluid -->
-</main>
+</main> 
 
 <?php   $this->load->view("plantillas/footer"); ?>
 	 
@@ -101,12 +108,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script type="text/javascript" src= "<?= base_url("/assets/jquery/jquery-3.4.1.min.js") ?>" ></script>
     <script src="<?= base_url("/assets/bootstrap/bootstrap.min.js")?>"  ></script>
+    <script src="<?= base_url("/assets/jqueryui/jquery-ui.js") ?>" ></script>
     <script src="<?= base_url("/assets/my_js.js")?>"  ></script>
-    <script src="<?= base_url("/assets/fcm/firebase-app.js")?>"  ></script>
-	<script src="<?= base_url("/assets/fcm/firebase-messaging.js")?>"  ></script>
+    <script src="<?= base_url("/assets/citydata.js") ?>" ></script>
+    <script src="<?= base_url("/assets/gui_refresh/refresh.js")?>"  ></script>
+    <script src="<?= base_url("/firebase-app.js")?>"  ></script>
+	<script src="<?= base_url("/firebase-messaging.js")?>"  ></script>
     <script src="<?= base_url("/assets/fcm/init.js")?>"  ></script>
+  
     
-	<script>
+<script>
+	//inicializacion
+    var  monthNames= [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ];
+	var dayNamesMin= [ "Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab" ];
+	$("#fechanac").datepicker( { monthNames: monthNames,dayNamesMin: dayNamesMin } );
+    
+    
+
+City_data.datosGeo( "#depart","#ciudad"); 
+
 
 //permiso para recibir notificaciones
 function permiso( ev){
@@ -114,7 +134,9 @@ function permiso( ev){
     if( ev.target.checked ){//casilla marcada
         //acciones- de espera
         let waiting= function(){
-            $("#mensaje").html("Procesando datos...");
+            let im= '<img src="/taxi_web/assets/img/loading.gif" alt="Procesando...">';
+            $("#mensaje").html(  im);
+             
         };
         
         //acciones - obtencion exitosa del token
@@ -138,7 +160,7 @@ function permiso( ev){
 
         //verifica/solicita permiso al usuario para enviarle notificaciones
         //luego se instala el service worker
-
+ 
         waiting();
         Fcm.requestPermissionToGetToken().
         then( function( ar){ //todo resulto bien, podemos obtener el token

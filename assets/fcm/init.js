@@ -24,13 +24,17 @@
             );
 
             this.messaging=  firebase.messaging();
+           //esto se invoca solo una vez
+            this.messaging.usePublicVapidKey('BK2EVduWVgQ36FtvJXrqzFNSZElVZ6iFRkZtyN26zDvHj6d7qtUtYS7jqmU5M1YoUXY-QUt9RDV_XChuA6JkXt4');
             this.registrarServiceWorker();
             this.eventos(); 
           }else{
-            this.messaging=  firebase.messaging(); 
+            
+            this.messaging=  firebase.messaging();  
+            this.eventos();
           }
                
-              
+           
     },
     hasNotificationSupport: function(){
       
@@ -89,11 +93,8 @@
                 }else return false;
             }  );
             
-            // [END get_messaging_object]
-            // [START set_public_vapid_key]
-            // Add the public key generated from the console here.
-            this.messaging.usePublicVapidKey('BK2EVduWVgQ36FtvJXrqzFNSZElVZ6iFRkZtyN26zDvHj6d7qtUtYS7jqmU5M1YoUXY-QUt9RDV_XChuA6JkXt4');
-            // [END set_public_vapid_key]
+             
+         
 
 
     },
@@ -160,20 +161,16 @@ isTokenSentToServer:   function () {
             // - a message is received while the app has focus
             // - the user clicks on an app notification created by a service worker
             //   `messaging.setBackgroundMessageHandler` handler.
+            
             this.messaging.onMessage((payload) => {
                 console.log('Message received. ', payload);
-                // [START_EXCLUDE]
-                // Update the UI to include the received message.
-                console.log( payload); 
-            const notificationTitle = payload.data.title;
-            const notificationOptions = {
-                body: payload.data.body,
-                icon: 'icono.jpg',
-                vibrate: true
-            };
-                new Notification(  notificationTitle, notificationOptions);
                 
-                // [END_EXCLUDE]
+                if( "gui_user_refresh" in payload.data ){
+                  //actualizar grilla de usuarios activos 
+                  mostrarUsuariosActivos(  payload.data );
+                }
+
+                 
             });
             // [END receive_message]
     },
@@ -231,12 +228,7 @@ enviar_mensajes: function (){
     "webpush": {
       "fcm_options": {
         "link": "https://google.com"
-      } },
-      "notification":{
-      "title": titulo,
-      "body": msg,
-      "icon":"icono.jpg"
-    }
+      } } 
 
     };// obs debe definirse un objeto de notificacion para visualizar las ventanas
     //de notificaciones

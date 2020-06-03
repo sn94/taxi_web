@@ -3,7 +3,7 @@
 }
 
 
-select,select.form-control, input[type=text],input[type=password]{
+select,select.form-control, input[type=tel],input[type=number],input[type=text],input[type=password]{
     background-color:  #ffe084 !important;
     border: none;
     border-bottom: 1px solid black;

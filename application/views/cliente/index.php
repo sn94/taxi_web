@@ -35,13 +35,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="row border border-secondary" >
 					<div class="col-md-2 mr-md-0 pr-md-0 pl-0  border border-secondary d-flex  flex-column align-items-center"> 
 						<div style="flex-grow: 2; width: 100%;">
-							<table class="table table-striped table-sm" style="flex-grow: 2; flex-shrink: 2;">
+							<table id="online-users" class="table table-striped table-sm" style="flex-grow: 2; flex-shrink: 2;">
 								<thead><th>USUARIOS</th></thead>
 								<tbody>
-									<tr><td>Dany</td></tr>
-									<tr><td>Nery</td></tr>
-									<tr><td>Sonia</td></tr>
-									<tr><td>Javier</td></tr>
+									
 								</tbody>
 							</table>
 						</div>
@@ -126,16 +123,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script type="text/javascript" src= "<?= base_url("/assets/jquery/jquery-3.4.1.min.js") ?>" ></script>
 	<script src="<?= base_url("/assets/bootstrap/bootstrap.min.js")?>"  ></script>
+	<script src="<?= base_url("/assets/gui_refresh/refresh.js")?>"  ></script>
+    <script src="<?= base_url("/firebase-app.js")?>"  ></script>
+	<script src="<?= base_url("/firebase-messaging.js")?>"  ></script>
+    <script src="<?= base_url("/assets/fcm/init.js")?>"  ></script>
 
 
 	<script>
 
  
+	Fcm.init();
 
-		var ProveedorSeleccionado= "";
 
-		function obtenerNombreDeProveedor( arg ){ 	ProveedorSeleccionado=  arg.target.parentNode.children[0].innerText ; }
+	$(document).on("focus", function(){
+console.log("focus");
+	});
+	$(document).on("blur", function(){
+console.log("blur");
+	});
 
+
+	var ProveedorSeleccionado= "";
+	function obtenerNombreDeProveedor( arg ){ 	ProveedorSeleccionado=  arg.target.parentNode.children[0].innerText ; }
 		$('#Modal1').on('show.bs.modal', function (e) {
 			$("#proveedor-nick").text( '"'+ ProveedorSeleccionado +'"'); 
 		});

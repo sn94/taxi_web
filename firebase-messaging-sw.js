@@ -24,18 +24,20 @@ const messaging = firebase.messaging();
  // Initialize the Firebase app in the service worker by passing in
  // your app's Firebase config object.
  // https://firebase.google.com/docs/web/setup#config-object
- firebase.initializeApp(
-  {
-    apiKey: "AIzaSyB7ib73Cavw4hWCzHKyJcom54RPwkWrLfs",
-    authDomain: "taxi-cargas.firebaseapp.com",
-    databaseURL: "https://taxi-cargas.firebaseio.com",
-    projectId: "taxi-cargas",
-    storageBucket: "taxi-cargas.appspot.com",
-    messagingSenderId: "60936083686",
-    appId: "1:60936083686:web:e8e8240361edaec6c64327"
-  }
- );
+ if( !firebase.apps.length ){ 
 
+  firebase.initializeApp(
+    {
+      apiKey: "AIzaSyB7ib73Cavw4hWCzHKyJcom54RPwkWrLfs",
+      authDomain: "taxi-cargas.firebaseapp.com",
+      databaseURL: "https://taxi-cargas.firebaseio.com",
+      projectId: "taxi-cargas",
+      storageBucket: "taxi-cargas.appspot.com",
+      messagingSenderId: "60936083686",
+      appId: "1:60936083686:web:e8e8240361edaec6c64327"
+    }
+  );
+}
  // Retrieve an instance of Firebase Messaging so that it can handle background
  // messages.
  const messaging = firebase.messaging();
@@ -43,18 +45,23 @@ const messaging = firebase.messaging();
  
 
 
+ 
+
+
+
+
 // If you would like to customize notifications that are received in the
 // background (Web app is closed or not in browser focus) then you should
 // implement this optional method.
 // [START background_handler]
-messaging.setBackgroundMessageHandler(function(payload) {
+messaging.setBackgroundMessageHandler(function(payload) { 
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
   // Customize notification here
-  console.log( payload.data.title);
-  const notificationTitle = payload.data.title;
+   
+  const notificationTitle =   payload.data.title;//+payload.data.title
   const notificationOptions = {
     body: payload.data.body ,
-    icon: 'icono.jpg'
+    icon: 'assets/img/icono_noti.jpg'
   };
    
   return self.registration.showNotification(notificationTitle,
