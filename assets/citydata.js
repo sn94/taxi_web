@@ -2,6 +2,12 @@
 var City_data= {
     alldata: [],
     datos_depart: [], 
+    actualizar_ciudad: function(e){
+        let d= $( e.target).val();  
+        let selector="input[type=hidden][name="+e.target.id+"]";
+        console.log(selector);
+        $(selector).val( d.split(",").join(" ")  );
+    },
     ciudadDepartSeleccionado:  function ( cual){
         let d= $( cual).val(); 
         $("input:hidden[name="+cual.substr(1)+"]").val( d.split(",").join(" ")  );
@@ -44,6 +50,12 @@ var City_data= {
             let pullData=  this;
             $.get("/taxi_web/assets/ciudades.json", function( res){
                 pullData.pullData( res, O_DEPART, O_CIUDAD );
+                //inicializar
+                
+                $(O_DEPART).on("change", function(e){
+                    pullData.actualizarListas( O_DEPART, O_CIUDAD);
+                } );
+                $(O_CIUDAD).on("change", pullData.actualizar_ciudad );
             } );
         }else{
             this.pullData( this.alldata, O_DEPART, O_CIUDAD ); 

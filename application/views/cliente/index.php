@@ -32,32 +32,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				
 				<?php   $this->load->view("plantillas/user_data_panel/index") ; ?>
 
+				<h4>Potenciales clientes en tu zona</h4>
 				<div class="row border border-secondary" >
-					<div class="col-md-2 mr-md-0 pr-md-0 pl-0  border border-secondary d-flex  flex-column align-items-center"> 
-						<div style="flex-grow: 2; width: 100%;">
-							<table id="online-users" class="table table-striped table-sm" style="flex-grow: 2; flex-shrink: 2;">
-								<thead><th>USUARIOS</th></thead>
-								<tbody>
-									
-								</tbody>
-							</table>
-						</div>
-						<div style="flex-grow: 1; flex-shrink: 1;  width:100%; ">
-						N° online
-						</div>
-						<div style="flex-grow: 1; flex-shrink: 1;  width:100%;  "  class="bg-warning">
-						Historico	
-					</div>
-						 
-						 
-					</div>
+					 
 					<div class="col-md-10 ml-md-0 pl-md-0 pl-0">
 						<table class="table table-striped table-hover">
-							<thead class="thead-dark"><th>Cliente</th><th>Tipo móvil</th><th>Hora</th> </thead>
+							<thead class="thead-dark"><th>Cliente</th><th>Hora</th><th>Detalles</th> </thead>
 							<tbody>
 								<?php foreach( $list as $item): ?>
-								<tr data-toggle="modal" data-target=".modal-proveedor-sel"  class="table-success" onclick="obtenerNombreDeProveedor(event)">
-								<td > <?= $item->nick ?></td><td>moto</td><td>9:00</td> 
+								<tr data-toggle="modal" data-target=".modal-proveedor-sel"  class="table-success" onclick="obtenerNombreDeCliente(event)">
+								<td id="<?= $item->id_fle ?>"> <?= $item->nick ?></td><td> <?= $item->fecha_alta ?> </td> <td> <button type="button">Ver</button> </td>
 								</tr>
 								
 								<?php endforeach;?>
@@ -73,7 +57,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="modal-dialog" role="document">
 						<div class="modal-content bg-warning">
 							<div class="modal-header">
-								<h5 class="modal-title font-weight-bold">Usted eligi&oacute; un proveedor:</h5>
+								<h5 class="modal-title font-weight-bold">¿Contactar con este cliente? </h5>
 								
 								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 									<span aria-hidden="true">&times;</span>
@@ -85,29 +69,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 							<div class="modal-footer d-flex justify-content-center">
 								<button type="button" class="btn btn-secondary" data-dismiss="modal">CANCELAR</button>
-								<a  href="/taxi_web/flete/index" class="btn btn-primary">ACEPTAR</a>
-							</div>
-						</div>
-					</div>
-				</div><!-- end container modal -->
-				<!-- start container modal  Precio recibido del proveedor-->
-				<div id="Modal2" class="modal fade modal-proveedor-precio" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content bg-warning">
-							<div class="modal-header">
-								<h5 class="modal-title font-weight-bold">ESTE ES EL PRECIO DEL PROVEEDOR:</h5>
-								
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-							<div class="modal-body">  
-								<h6 id="proveedor-nick" class="font-weight-bold text-center">Nick de proveedor</h6>
-								<h5>Gs. 5,000,000</h5>
-							</div>
-							<div class="modal-footer d-flex justify-content-center">
-								<button type="button" class="btn btn-secondary" data-dismiss="modal">CANCELAR</button>
-								<a  href="/taxi_web/flete/index" class="btn btn-primary">ACEPTAR</a>
+								<a  id="irDetalle" href="/taxi_web/flete/view/" class="btn btn-primary">ACEPTAR</a>
 							</div>
 						</div>
 					</div>
@@ -123,31 +85,46 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script type="text/javascript" src= "<?= base_url("/assets/jquery/jquery-3.4.1.min.js") ?>" ></script>
 	<script src="<?= base_url("/assets/bootstrap/bootstrap.min.js")?>"  ></script>
-	<script src="<?= base_url("/assets/gui_refresh/refresh.js")?>"  ></script>
-    <script src="<?= base_url("/firebase-app.js")?>"  ></script>
+
+		<!-- FIREBASE -->
+	<script src="<?= base_url("/firebase-app.js")?>"  ></script>
 	<script src="<?= base_url("/firebase-messaging.js")?>"  ></script>
-    <script src="<?= base_url("/assets/fcm/init.js")?>"  ></script>
+	<script src="<?= base_url("/assets/fcm/init.js")?>"  ></script>
+	<script src="<?= base_url("/assets/gui_refresh/refresh.js")?>"  ></script>
 
 
 	<script>
 
+
  
-	Fcm.init();
+	
 
 
-	$(document).on("focus", function(){
-console.log("focus");
-	});
-	$(document).on("blur", function(){
-console.log("blur");
-	});
-
-
-	var ProveedorSeleccionado= "";
-	function obtenerNombreDeProveedor( arg ){ 	ProveedorSeleccionado=  arg.target.parentNode.children[0].innerText ; }
-		$('#Modal1').on('show.bs.modal', function (e) {
-			$("#proveedor-nick").text( '"'+ ProveedorSeleccionado +'"'); 
+ 	//Usuario ingresa a la ventana, abandona la ventana
+	 $(document).ready( function(){
+		//pagina cargada, activar 
+		Fcm.init();
+		activarUsuario(); 
+		//cierra, abandona la ventana
+		$(window).on("beforeunload", function() {  
+			//usuario offline
+			desactivarUsuario();
 		});
+
+	});
+
+
+	var ClienteSeleccionado= "";
+	function obtenerNombreDeCliente( arg ){
+		//id de flete
+		let idFlete= arg.target.parentNode.children[0].id;
+		$("#irDetalle").attr("href", 	$("#irDetalle").attr("href")+idFlete );
+		//obtener nick de cliente
+		ClienteSeleccionado=  arg.target.parentNode.children[0].innerText ;
+	 }
+	$('#Modal1').on('show.bs.modal', function (e) {
+		$("#proveedor-nick").text( '"'+ ClienteSeleccionado +'"'); 
+	});
 			
 	</script>
 

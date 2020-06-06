@@ -14,16 +14,16 @@
        <?=   $this->session->userdata("usuario")   ?>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Mi cuenta</a>
+          <a class="dropdown-item" href="/taxi_web/proveedor/servicio">Mi servicio</a>
            <a class="dropdown-item" href="/taxi_web/cliente/pedidos_realizados">Pedidos Recibidos</a>
           <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="<?= base_url("usuario/sign_out")?>">Eliminar cuenta</a>
           <a class="dropdown-item" href="<?= base_url("usuario/sign_out")?>">Cerrar sesi&oacute;n</a>
         </div>
       </li>
      
  
- 
-
+   
       <li class="nav-item">
           <a class="nav-link" href="#">NOSOTROS</a>
         </li>

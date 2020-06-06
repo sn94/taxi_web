@@ -87,56 +87,75 @@ class Usuario extends CI_Controller {
 
 	 
 
-	public function  read_user_tokens(){
-		$fichero= fopen("online_users.txt", "r");
-		$registration_ids=[];
-		while(  !feof($fichero)){
-			$linea= fgets( $fichero);
-			$datos= explode(",",  $linea); 
-			if( sizeof( $datos) > 1){
-				array_push( $registration_ids,   $datos[0]);
-			}  
-			 
-		}
-		fclose($fichero); 
-		return  $registration_ids;
-	}
+	/****
+	 * **Notificacion de cambios de estado del usuario **
+	 * 
+	 * */
+	private function  read_user_tokens(){
+		$Rs=$this->Usuario_model->getOnlineUsers();
+		$tokens=[];
+		foreach( $Rs as $it){ 	array_push($tokens,  $it->token); 	} return  $tokens;
+	} 
 
-	private function add_visit_log($data){
-		$this->Usuario_model->add_visit_log( $data); 
-	}
-
-
-	private function add_user_log( $data){
-		$fichero= fopen("online_users.txt", "a");
-		$Cadena=$data['token'].",".$data['id'];
-		fputs(  $fichero, $Cadena); 
-		fputs( $fichero, chr(13).chr(10) );
-		fclose( $fichero);
+	private function notificarEstado( $online){
+	/***Notificar a otros usuarios */
+	$tokens=$this->read_user_tokens();//a quienes notificar
+	$nick_usuario=  $this->session->has_userdata("usuario") ? $this->session->userdata("usuario") :"-" ; //off
+	$datos_noti= array("gui_user_refresh"=>"yes","user"=>$nick_usuario,"on"=> $online);
+	if( sizeof($tokens) > 0)
+	{ $this->firebase_req->send_msg_multicast(   $tokens, $datos_noti);} 
 	}
 
 	public function user_status( $online){
 		//1 online  0 offline
 		$token= $this->input->post("token");
-		$ip= $this->input->ip_address();
-		$id_usuario=  $this->session->userdata("id"); 
-		$nick_usuario=  $this->session->userdata("usuario"); 
-		//navegador sistema operativo
-		$navegador= $this->input->user_agent();
-		//fecha-hora
-		$fecha= date("Y/m/d H:i:s");
-		/**********grabar en archivo de seguimiento de usuarios */
-		$DATOS= array( "ip"=>$ip, "id_us"=>$id_usuario, "browser"=> $navegador, "fecha_hora"=>$fecha);
-		$this->add_visit_log(  $DATOS );
-		$this->add_user_log(  array("token"=> $token, "id"=>$id_usuario) ) ;
-		/***Notificar a otros usuarios */
-		$tokens=$this->read_user_tokens();
-		$datos_noti= array("gui_user_refresh"=>"yes","user"=>$nick_usuario,"on"=>"1");
-		if( sizeof($tokens) > 0)
-	{	
-		$this->firebase_req->send_message_one_device(   $tokens, $datos_noti);
-	} 	 	
+		if( $online == "1"){ 
+			$ip= $this->input->ip_address();
+			$id_usuario=  $this->session->has_userdata("id")?  $this->session->userdata("id"):"visitante"; 
+			$nick_usuario=  $this->session->userdata("usuario")?  $this->session->userdata("usuario"):"visitante"; 
+			//navegador sistema operativo
+			$navegador= $this->input->user_agent();
+			//fecha-hora
+			$fecha= date("Y/m/d H:i:s");
+			/**********grabar en archivo de seguimiento de usuarios */
+			$DATOS= array( "ip"=>$ip, "id_us"=>$id_usuario, "browser"=> $navegador, "fecha_hora"=>$fecha);
+			$this->Usuario_model->add_visit_log(    $DATOS );//libro de visitas
+			//Cambiar el estado en linea del usuario solo si este no es visitante, y su estado esta
+			//en off
+			if(($nick_usuario != "visitante"   &&  !$this->Usuario_model->isOnlineUser($id_usuario)) || $nick_usuario=="visitante"  )
+			{
+				$this->Usuario_model->add_user_log(  array(  "id_usu"=>$id_usuario, "token"=> $token) ) ;
+				$this->notificarEstado( $online);
+				echo "ONLINE";
+			}
+			
+				
+		}else{
+			$id_usuario=  $this->session->has_userdata("id")?  $this->session->userdata("id"):"visitante"; 
+			if( $id_usuario != "visitante"){
+					$this->Usuario_model->add_user_log(  array(  "id_usu"=>$id_usuario, "token"=>$token) ) ;
+					$this->notificarEstado( $online);
+			}
+		}
+		
+		 	
 	}
+
+/*************End funciones de notificacion de estados */
+
+
+
+/***
+ * Totales de usuarios en linea
+ * 
+ */
+public function getTotalOnline(){
+	$t_v=	$this->Usuario_model->getTotalOf( "v");
+	$t_c=	$this->Usuario_model->getTotalOf( "c");
+	$t_p=	$this->Usuario_model->getTotalOf( "p");
+	echo json_encode(array( "v"=> $t_v,  "c"=> $t_c,  "p"=> $t_p));
+}
+
 
 
 	public function passChange(){ 
@@ -166,7 +185,7 @@ class Usuario extends CI_Controller {
 	}
 
 	public function z(){ 
-	var_dump( $this->Usuario_model->getByName( "ffdg") );
+	var_dump( $this->Usuario_model->getOnlineUsersFor("c") );
 		//var_dump(  $this->session->userdata( "nombres") );
 		//var_dump( $this->Usuario_model->list_vendedores());
 	}
@@ -185,29 +204,16 @@ class Usuario extends CI_Controller {
 	}
 
 
-	public function create( $tipo="c"){
-		 
-	$this->load->helper("form");
-
+	public function sign_up( $tipo="c"){
+		$this->load->helper("form");
 		if(   $this->input->method(FALSE)	 == "post" ){ 
 			 
-			if( $this->Usuario_model->add() ){
-				$this->internal_sign_in( $this->input->post("nick"),
-										$this->input->post("passw"));
-			}else{
-				$this->load->view("usuario/error", array("mensaje"=> "Hubo un error al registrar sus datos. Vuelva a intentar")  );
-			}
-			
-			
+			if( $this->Usuario_model->add() ){ 	$this->internal_sign_in( $this->input->post("nick"), 	$this->input->post("passw"));
+			}else{ 	$this->load->view("usuario/error", array("mensaje"=> "Hubo un error al registrar sus datos. Vuelva a intentar")  );
+			} 
 		}else{  
 			$this->load->view("usuario/create", array("tipo"=> $tipo)  );
-			//$this->load->view("plantillas/success", array("mensaje"=>"Datos de Usuario agregado"));
-		}
-
-			
-		  
-		
-		
+		} 		
 	}
 
  

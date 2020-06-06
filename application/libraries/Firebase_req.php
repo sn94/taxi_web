@@ -16,13 +16,13 @@ class Firebase_req{
       //setting header
       curl_setopt($cliente, CURLOPT_HTTPHEADER, array(
           'Content-Type: application/json',
-          "Authorization: key=AAAADjAS2OY:APxaA91bFxMXQO10j7kRsamMpOi0Vl6U0le39HzfnKeFoEnc1qS0jCGVHqiK7q8jlFA0e65giaSUpQ1tUkaWUQd-kzQlO_sb0vrXt4VOqBgmzaYJxOHZP_8nQyPUqGThFkg6thPxEiwdJN",
+          "Authorization: key=AAAADjAS2OY:APA91bFxMXQO10j7kRsamMpOi0Vl6U0le39HzfnKeFoEnc1qS0jCGVHqiK7q8jlFA0e65giaSUpQ1tUkaWUQd-kzQlO_sb0vrXt4VOqBgmzaYJxOHZP_8nQyPUqGThFkg6thPxEiwdJN",
           'Connection: Keep-Alive'
           )); 
       //DATOS
-      $token= $registrations; 
+     
       $datos= array(
-          "to" => $token[0],
+          "registration_ids" => $registrations,
           "data"=>  $data,
           "webpush"=> array(  "fcm_options"=>  array(  "link"=> "https://google.com") ),
           'priority'=>'high'
@@ -48,7 +48,7 @@ class Firebase_req{
         'Connection: Keep-Alive'
         )); 
     //DATOS
-    $token="enAEMGcHCT_bqRUoHwibf2:APA91bGN0sOxlz4gt7DAYRw075zIJfLCsA4kIE1o2N44dItM5kFOEw-_-spj7ZiKOh8yxsmJ0N8suXxfsPKYNxczPl7ZlryZRyEW6jYaNV-xhBioBIrDc6BbiMKD9erKpmkRujRp-nEc";
+    $token= $token_reg;
 $datos= array(
         "to" => $token,
         "data"=>  $data,
@@ -60,7 +60,7 @@ $datos= array(
     curl_setopt($cliente, CURLOPT_RETURNTRANSFER, true); //retorno
     $contenido = curl_exec($cliente);//ejecucion
     curl_close($cliente);//cierre de peticion
-    var_dump(  $contenido );
+    var_dump($contenido);
     }
     
 

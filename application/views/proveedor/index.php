@@ -31,33 +31,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<div class="container-fluid m-1" > 
 				
 				<?php   $this->load->view("plantillas/user_data_panel/index") ; ?>
+				<h4>Servicios disponibles ahora en tu zona</h4>
 				<div class="row border border-secondary" >
-					<div class="col-md-2 mr-md-0 pr-md-0 pl-0  border border-secondary d-flex  flex-column align-items-center"> 
-						<div style="flex-grow: 2; width: 100%;">
-							<table  id="online-users" class="table table-striped table-sm" style="flex-grow: 2; flex-shrink: 2;">
-								<thead><th>USUARIOS</th></thead>
-								<tbody> 
-								</tbody>
-							</table>
-						</div>
-						<div style="flex-grow: 1; flex-shrink: 1;  width:100%; ">
-						N° online
-						</div>
-						<div style="flex-grow: 1; flex-shrink: 1;  width:100%;  "  class="bg-warning">
-						Historico	
-					</div>
-						 
-						 
-					</div>
+					 
 					<div class="col-md-10 ml-md-0 pl-md-0 pl-0">
 						<table class="table table-striped table-hover">
 							<thead class="thead-dark"><th>Proveedor</th><th>Kgs</th><th>Tipo móvil</th><th>Ayudante</th><th>Horario</th></thead>
 							<tbody>
-								<tr data-toggle="modal" data-target=".modal-proveedor-sel"  class="table-success" onclick="obtenerNombreDeProveedor(event)"><td >Fidencio</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
-								<tr class="table-success"><td>Jazmin</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
-								<tr class="table-danger"><td>Ruben</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
-								<tr class="table-warning"><td>Junior</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
-								<tr class="table-warning"><td>Oscar</td><td>10</td><td>moto</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
+
+							<?php foreach( $list as $item): ?>
+
+							<tr data-toggle="modal" data-target=".modal-proveedor-sel"  class="table-success" onclick="obtenerNombreDeProveedor(event)"><td ><?= $item->nick ?></td><td> Tipo movil</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
+							
+							<?php endforeach;?> 
+
 							</tbody>
 						</table>
 					</div>
@@ -119,7 +106,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script type="text/javascript" src= "<?= base_url("/assets/jquery/jquery-3.4.1.min.js") ?>" ></script>
 	<script src="<?= base_url("/assets/bootstrap/bootstrap.min.js")?>"  ></script>
-	
+	<!-- FIREBASE -->
     <script src="<?= base_url("/firebase-app.js")?>"  ></script>
 	<script src="<?= base_url("/firebase-messaging.js")?>"  ></script>
 	<script src="<?= base_url("/assets/fcm/init.js")?>"  ></script>
@@ -128,21 +115,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script>
 
-	//Usuario ingresa a la ventana, abandona la ventana
+			
+
+
+//Usuario ingresa a la ventana, abandona la ventana
 $(document).ready( function(){
-	$(window).focus(  function(){
-		activarUsuario();
-	});
-	$(window).blur(  function(){
-console.log("blur");
-	});
+   //pagina cargada, activar 
+   Fcm.init();
+   activarUsuario(); 
+   //cierra, abandona la ventana
+   $(window).on("beforeunload", function() {  
+	   //usuario offline
+	   desactivarUsuario();
+   });
 
 });
- 
-
-
-
-		Fcm.init();
 
 		var ProveedorSeleccionado= "";
 

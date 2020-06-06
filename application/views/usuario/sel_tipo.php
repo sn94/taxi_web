@@ -33,10 +33,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <h4  class="text-center">REGISTRARSE COMO</h4>
 		<div class="row mt-5">
 			<div class="offset-3 col-3 offset-sm-4 col-sm-2 offset-md-5 col-md-1">
-				<a href="/taxi_web/usuario/create/c" class="btn btn-info">CLIENTE</a>
+				<a href="/taxi_web/usuario/sign_up/c" class="btn btn-info">CLIENTE</a>
 			</div>
 			<div class="col-3 col-sm-2 col-md-1">
-				<a  href="/taxi_web/usuario/create/p" class="btn btn-info">PROVEEDOR</a>
+				<a  href="/taxi_web/usuario/sign_up/p" class="btn btn-info">PROVEEDOR</a>
 			</div>
 		</div> 
 				 

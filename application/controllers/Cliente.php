@@ -7,165 +7,50 @@ class Cliente extends CI_Controller {
 		parent::__construct();
 		date_default_timezone_set("America/Asuncion");
 		$this->load->model("Usuario_model");
+		$this->load->model("Cliente_model");
 	 }
 
 	public function index()
 	{
-		$dts= $this->Usuario_model->list_clientes();
+		//listar clientes de la zona
+		$dts= $this->Cliente_model->listPedDeCliPorZona();
+
+		/**Totalizar visitas */
+		$tv=$this->Usuario_model->getTotalOf("v");
+		$tc=$this->Usuario_model->getTotalOf("c");
+		$tp=$this->Usuario_model->getTotalOf("p");
+		/*** */
+
 		//obtener datos de usuario actual
 		if( $this->session->has_userdata("usuario") ){ 
-
 			$cedula= $this->session->userdata("id") ;
 			$usu= $this->Usuario_model->get( $cedula);
-			$this->load->view('cliente/index', array("list"=> $dts, "usuario"=> $usu )  );
+			$this->load->view('cliente/index', array("list"=> $dts, "usuario"=> $usu, "totales"=> array("v"=>$tv,"c"=>$tc,"p"=>$tp)  )  );
 		}else{
 			if( $this->session->userdata("tipo") =="v" ){//Si fuera visitante
 				 
-				$this->load->view('cliente/index', array("list"=> $dts )  );
-			}else{
-				$this->load->view('cliente/index', array("list"=> $dts)  );
-			} 
+				$this->load->view('cliente/index', array("list"=> $dts, "totales"=> array("v"=>$tv,"c"=>$tc,"p"=>$tp)  )  );
+			}else{ $this->load->view('cliente/index', array( "list"=> $dts, "totales"=> array("v"=>$tv,"c"=>$tc,"p"=>$tp) )  );} 
 		}
 	 
 	}
+
+
+
+	
 
 	 public function z(){
-		$dts= $this->Cliente_model->list();  
-		echo json_encode( $dts);
+	$this->Cliente_model->listPedDeCliPorZona();  
+		 
 	 }
 
-	public function list(){ 
-		$cList=	$this->Cliente_model->listCustom(); 
-		echo json_encode(  $cList);
-	}
-
-	public function listView(){ 
-		$cList=	$this->Cliente_model->listCustom(); 
-		if( $this->session->userdata("tipo")=="S" )
-		$this->load->view("cliente/index/index_s", array("list"=> $cList)   );
-		if( $this->session->userdata("tipo")=="A" )
-		$this->load->view("cliente/index/index_a",  array("list"=> $cList) );
-		if( $this->session->userdata("tipo")=="V" )
-		$this->load->view("cliente/index/index_v", array("list"=> $cList) ); 
-	}
-
-	public function create(){
-		$this->load->view("cliente/create"); 	 			
-	}
-
-	public function pedidos_realizados(){
-		$this->load->view("cliente/list_pedidos"); 	
-	}
-
-	public function edit( $cedula ){
-		$d= NULL;// PAYLOAD DE FORMULARIO
-		$d= $this->input->post();
-		if( sizeof($d)){ 
-			$this->Cliente_model->edit() ;
-			$this->load->view("plantillas/success", array("mensaje"=>"Datos de cliente Actualizado")); 
-			 
-		}else{
-			//POBLAR FORMULARIO
-			$this->load->helper("form");
-			$cli= $this->Cliente_model->get( $cedula );
-			$this->load->view("cliente/edit/index", array("datos"=> $cli) );
-		} 
-	}
-
-
-	public function delete( $id= "" ){
-		 
-		if( $id ){
-			$this->Cliente_model->del( $id);
-			$this->load->view("plantillas/success", array("mensaje"=>"Datos de cliente borrados")); 
-			 
-		}else{ 
-			$this->load->helper("form");
-			$this->load->view("cliente/delete" ); 
-		} 
  
-	}
-
-	public function del( $id= "" ){
-		echo  $this->Cliente_model->del( $id);
-	}
-
-	public function retirado( $cedula){
-		$cli= $this->Cliente_model->retirado( $cedula );
-		if( $cli > 0){
-			echo json_encode( array("ok"=>"SE HA REGISTRADO EL RETIRO DE DINERO") );
-		}else{
-			echo json_encode( array("error"=>"NO SE PUDO REGISTRAR EL RETIRO. COMUNIQUESE CON EL DESARROLLADOR") );
-		}
-	}
-	
-	public function view($cedula){
-		$cli= $this->Cliente_model->get( $cedula );
-		$this->load->view("cliente/view/index", array("datos"=> $cli) );
-	}
-	//busqueda por cedula
-	public function get(  $ci){
-		$dt= $this->Cliente_model->get( $ci ) ;
-		if( is_null ($dt )){
-            echo json_encode(  array('error' => "Este cliente no existe" )); 
-         } else{ 
-			echo json_encode($dt );
-		}		
-   }
-
-
-
-	public function getForRead(  $ci){
-		$dt= $this->Cliente_model->get( $ci ) ;
-		if( is_null ($dt )){
-            echo json_encode(  array('error' => "Este cliente no existe" )); 
-         } else{
-			$this->load->helper("form");
-			$this->load->view("cliente/view_data", array("datos"=> $dt));
-			 
-		}		
-   }
-
-	public function getForEdit(  $ci){
-		 $dt= $this->Cliente_model->get( $ci ) ;
-		 if( is_null ($dt)){
-            echo json_encode(  array('error' => "Este cliente no existe" )); 
-         }else{
-			$this->load->helper("form");
-			$this->load->view("cliente/edit_data", array("datos"=> $dt));
-			 
-		 }	
-	}
-
-	public function getClientes(  ){
-		$dt= $this->Cliente_model->listByName( $this->input->post("nom") ) ;
-		if( is_null ($dt)){
-		   echo json_encode(  array('error' => "Sin resultados" )); 
-		}else{
-		   echo json_encode( $dt );  
-		}	
-   }
 
 	 
-   /**Confirma si el credito ha sido aprobado o NO */
-	public function confirmar($ci){
-		echo $this->Cliente_model->habilitadoParaConfirmar($ci);
-	}
+ 
 
-
-
-	public function informes(){
-		$dts= $this->Cliente_model->list(); 
-		$this->load->view( "cliente/informes", array("list"=> $dts)  );
-	}
-
-	public function t( $estado="P", $vendedor="0", $m1="1",  $m2="12"){ 
-	
-	var_dump( $this->Cliente_model->listCustom( $estado, $vendedor, $m1, $m2) ); 
-	
-	}
 	 
-
+ 
 
 	private function monthDescr($m){
 		$r="";
@@ -362,19 +247,5 @@ class Cliente extends CI_Controller {
 	}
 
 
-
-	public function totalClientes(){
-		$totals= $this->Cliente_model->totalizarClientesPorEstado();
-		echo json_encode( $totals);
-	}
-
-	public function estadistica(){
-		//$totals= $this->Cliente_model->totalizarClientesPorEstado();
-		$this->load->view("cliente/estadistica" );
-	}
-
-
-	public function ubicacion(){
-		$this->load->view("cliente/ubicacion" );
-	}
+  
 }

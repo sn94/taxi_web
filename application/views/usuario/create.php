@@ -43,7 +43,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div class="container">
 
    
-    <?php   echo form_open("usuario/create/$tipo") ;  ?>
+    <?php   echo form_open("usuario/sign_up/$tipo") ;  ?>
         <div class="row">
                        
             <div class="col-md-6">
@@ -52,7 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 Contrase&ntilde;a:<input class="form-control form-control-sm form-control-md mt-1" type="password" placeholder="Clave" name="passw">
                 <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Nombres" name="nombre">
                 <input class="form-control form-control-sm form-control-md mt-1" type="text" placeholder="Apellidos" name="apellido">
-                <select class="form-control form-control-sm form-control-md mt-1"    id="depart"  onchange="City_data.actualizarListas('#o_depart','#o_ciudad')" ></select>
+                <select class="form-control form-control-sm form-control-md mt-1"    id="depart"  ></select>
                 <input type="hidden" name="depart"> 
 
                 <select class="form-control form-control-sm form-control-md mt-1"   id="ciudad"></select>

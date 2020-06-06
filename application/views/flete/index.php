@@ -63,11 +63,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<h4>Origen</h4>
 					<dl class="row"> 
 						<dt class="col-sm-5">Departamento:</dt>
-						<dd class="col-sm-7"><select onchange="City_data.actualizarListas('#o_depart','#o_ciudad')" class="form-control"   id="o_depart"  ></select></dd>
+						<dd class="col-sm-7"><select class="form-control"   id="o_depart"  ></select></dd>
 						<input type="hidden" name="o_depart"> 
 
 						<dt class="col-sm-5">Ciudad:</dt>
-						<dd class="col-sm-7"> <select class="form-control"  id="o_ciudad"  ></select> </dd>
+						<dd class="col-sm-7"> <select   class="form-control"  id="o_ciudad"  ></select> </dd>
 						<input type="hidden" name="o_ciudad"> 
 
 						<dt class="col-sm-5">Barrio:</dt>
@@ -95,7 +95,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<h4>Destino</h4>
 					<dl class="row">
 						<dt class="col-sm-5">Departamento:</dt>
-						<dd class="col-sm-7"><select  onchange="City_data.actualizarListas('#d_depart','#d_ciudad')" class="form-control"  id="d_depart"  ></select></dd>
+						<dd class="col-sm-7"><select  class="form-control"  id="d_depart"  ></select></dd>
 						<input type="hidden" name="d_depart"> 
 
 						<dt class="col-sm-5">Ciudad:</dt>

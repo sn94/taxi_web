@@ -57,15 +57,20 @@ const messaging = firebase.messaging();
 messaging.setBackgroundMessageHandler(function(payload) { 
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
   // Customize notification here
-   
-  const notificationTitle =   payload.data.title;//+payload.data.title
-  const notificationOptions = {
-    body: payload.data.body ,
-    icon: 'assets/img/icono_noti.jpg'
-  };
-   
-  return self.registration.showNotification(notificationTitle,
-    notificationOptions);
+   if(  "gui_user_refresh" in payload.data){
+
+      return;
+   }
+  else{
+      const notificationTitle =   payload.data.title;//+payload.data.title
+      const notificationOptions = {
+        body: payload.data.body ,
+        icon: 'assets/img/icono_noti.jpg'
+      };
+      return self.registration.showNotification(notificationTitle,
+        notificationOptions);
+   }
+  
     
 });
 // [END background_handler]
