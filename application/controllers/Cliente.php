@@ -37,11 +37,24 @@ class Cliente extends CI_Controller {
 
 
 
+	public function ofertas_r(){
+			/**Totalizar visitas */
+			$tv=$this->Usuario_model->getTotalOf("v");
+			$tc=$this->Usuario_model->getTotalOf("c");
+			$tp=$this->Usuario_model->getTotalOf("p");
+			/*** user*/
+			$cedula= $this->session->userdata("id") ;
+			$usu= $this->Usuario_model->get( $cedula);
+			//listar ofertas
+			$lista= $this->Cliente_model->ofertasRecibidas();
+		$this->load->view("cliente/ofertas_r", 
+		 array( "list"=> $lista, "usuario"=> $usu, "totales"=> array("v"=>$tv,"c"=>$tc,"p"=>$tp)  ) );
+	}
 	
 
 	 public function z(){
-	$this->Cliente_model->listPedDeCliPorZona();  
-		 
+	 
+	$lista= $this->Cliente_model->ofertasRecibidas();
 	 }
 
  

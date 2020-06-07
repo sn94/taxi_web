@@ -60,7 +60,7 @@ $datos= array(
     curl_setopt($cliente, CURLOPT_RETURNTRANSFER, true); //retorno
     $contenido = curl_exec($cliente);//ejecucion
     curl_close($cliente);//cierre de peticion
-    var_dump($contenido);
+    return $contenido;
     }
     
 

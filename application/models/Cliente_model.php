@@ -25,6 +25,16 @@ class Cliente_model extends CI_Model {
    }
 
 
+   public function ofertasRecibidas(){
+      $this->db->select("ofertas_precio.id_flete,usuario.nick, flete.fecha_alta, ofertas_precio.estado");
+       $this->db->from("ofertas_precio");
+       $this->db->join("usuario", "usuario.id_usu = ofertas_precio.proveedor");
+       $this->db->join("flete", "flete.id_fle = ofertas_precio.id_flete");
+       $this->db->where("ofertas_precio.cliente", $this->session->userdata("id"));
+       $sql = $this->db->get()->result(); 
+      return $sql;
+   }
+
 
    
 

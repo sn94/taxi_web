@@ -31,9 +31,10 @@
           }else{
             
             this.messaging=  firebase.messaging();  
+            this.registrarServiceWorker();
             this.eventos();
           }
-               
+          return 0;
            
     },
     hasNotificationSupport: function(){
@@ -168,6 +169,8 @@ isTokenSentToServer:   function () {
                 if( "gui_user_refresh" in payload.data ){
                   //actualizar grilla de usuarios activos 
                   mostrarUsuariosActivos(  payload.data );
+                }else{
+                  showNotification( payload.data);
                 }
 
                  

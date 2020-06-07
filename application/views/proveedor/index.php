@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}
 
 	.footer {
-	background-color: #f5f5f5;
+		background-color: #f5f5f5;
 	}
 
 </style>
@@ -115,19 +115,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script>
 
-			
-
-
+			 
+	Fcm.init();  
 //Usuario ingresa a la ventana, abandona la ventana
 $(document).ready( function(){
    //pagina cargada, activar 
-   Fcm.init();
-   activarUsuario(); 
+  
+	 
+   
    //cierra, abandona la ventana
-   $(window).on("beforeunload", function() {  
+   /*$(window).on("beforeunload", function() {  
 	   //usuario offline
 	   desactivarUsuario();
-   });
+   });*/
 
 });
 

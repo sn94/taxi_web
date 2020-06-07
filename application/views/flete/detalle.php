@@ -53,6 +53,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				<h4> <span>Detalle del pedido de:</span> "<span><?= $dato->nick ?></span>" </h4>
 				 <input type="hidden" id="usuid" value="<?= $dato->id_usu ?>">
+				 <input type="hidden" id="flete_id" value="<?=$dato->id_fle?>">
+				 
 			 
 				<div id="propuesta" class="container shadow   p-1">
 				<span>¿Qu&eacute; precio ofreces? &nbsp;</span><input type="text"  id="precio">
@@ -178,13 +180,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	function enviar_propuesta(){
 		let usu= $("#usuid").val();
 		let precio= $("#precio").val();
-		$.ajax( { url:"/taxi_web/proveedor/proponer", method: "post", data: {cliente: usu,precio:precio},
+		let flete= $("#flete_id").val();
+		let datos= {cliente: usu,precio:precio , id_flete: flete };
+		$.ajax( { url:"/taxi_web/proveedor/proponer", method: "post", data: datos,
 		success: function(res){
-			console.log( "Respuesta:", res);
-			$("#waitingimg").css("display","none");
+			let response= JSON.parse( res );
+			console.log(response);
+			if( response.success == 1)
+			{  $("#waitingimg").css("display","none");}
+			else {
+				$("#waitingimg").css("display","none");
+				alert("Error de envio"," Por favor, reintente enviar su mensaje");
+			}
 		},
 		beforeSend: function(){
 			$("#waitingimg").css("display","block");
+		},
+		error: function(xhr, texterr){ 
+			$("#waitingimg").css("display","none");
+			alert( "Hubo un error en el servidor.");
 		}
 	});
 	}

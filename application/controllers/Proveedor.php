@@ -72,17 +72,27 @@ class Proveedor extends CI_Controller {
 	 }
 
 	 
-
+/**
+ * Envia una notificacion al cliente, una propuesta de precio sobre su pedido
+ */
 	 public function proponer( ){
+		 
 		$id_cliente= $this->input->post("cliente");
-		$precio= $this->input->post("precio");
-		var_dump( $this->input->post());
-		$usu= $this->Usuario_model->get( $id_cliente);
-		$datos=  array("title"=>"Precio", "body"=> $precio  );
-		$this->load->library("firebase_req");
- 
-		 $this->firebase_req->send_message_one_device( $usu->id_token, $datos);
-
+		$precio= $this->input->post("precio"); 
+		if($this->Proveedor_model->registrar_oferta()){
+			//USUARIO DE CLIENTE
+			$usu= $this->Usuario_model->get( $id_cliente);
+			//El chofer
+			$driver=$this->session->userdata("usuario");
+			$titulo="($driver) reaccionó a su pedido";
+			$body="Propuesta: $precio";
+			$datos=  array("title"=> $titulo, "body"=> $body  );
+			$this->load->library("firebase_req");
+			echo $this->firebase_req->send_message_one_device( $usu->id_token, $datos);
+		}else{
+			trigger_error("Error al tratar de registrar en la B.D", E_ERROR);
+		}
+		
 	}
 
 

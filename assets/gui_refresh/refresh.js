@@ -1,3 +1,8 @@
+function showNotification( payload ){
+    $('#new-notifi').modal('show');
+}
+
+
 function mostrarUsuariosActivos( data ){
     console.log("mostrarUsuariosActivos");
     if( data.on=="1" &&  data.user != "-")
@@ -26,7 +31,10 @@ function activarUsuario() {//online
               success: function(ar){ 
                   console.log( "Usuario: ON" ) ;
                   localStorage.setItem("taxicargas_useronline", "on");
-                }
+                },
+            error: function(xhr, texterr){
+                alert( texterr);
+            }
             }  
          );
     });

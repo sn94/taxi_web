@@ -16,7 +16,9 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a  style="text-align: right;"  class="dropdown-item" href="#">Mi cuenta</a>
            <a  style="text-align: right;" class="dropdown-item" href="/taxi_web/cliente/pedidos_realizados">Pedidos realizados</a>
+           <a   style="text-align: right;"  class="dropdown-item" href="<?= base_url("cliente/ofertas_r")?>">Ofertas recibidas</a>
           <div class="dropdown-divider"></div>
+          <a   style="text-align: right;"  class="dropdown-item" href="<?= base_url("usuario/sign_out")?>">Eliminar Cuenta</a>
           <a   style="text-align: right;"  class="dropdown-item" href="<?= base_url("usuario/sign_out")?>">Cerrar sesi&oacute;n</a>
         </div>
       </li>
