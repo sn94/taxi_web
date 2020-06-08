@@ -1,4 +1,8 @@
 function showNotification( payload ){
+    console.log( payload);
+    $("#titularnoti").text( payload.title);
+    $("#bodynoti").text( payload.body);
+    //$("#irDetalle").attr("href",  $("#irDetalle").attr("href")+ payload.id_flete);
     $('#new-notifi').modal('show');
 }
 

@@ -83,8 +83,8 @@
                   .then(function(registration) { 
                       registration.update();  messag.useServiceWorker(registration); 
                       console.log('Registration successful, scope is:', registration.scope);
-                      //otra promesa, obtiene el token
-                     //------- messag.getToken().then(to_do); 
+                      
+                    
                      return true;
                     }).catch(function(err) { 
                       console.log('Service worker registration failed, error:', err.code);
@@ -106,18 +106,22 @@ isTokenSentToServer:   function () {
     setTokenSentToServer: function(sent) {
         window.localStorage.setItem('sentToServer', sent ? '1' : '0');
       },
-      
-    sendTokenToServer: function(currentToken) {
-        if (!isTokenSentToServer()) {
-          console.log('Sending token to server...');
-          // TODO(developer): Send the current token to your server.
-          setTokenSentToServer(true);
-        } else {
-          console.log('Token already sent to server so won\'t send it again ' +
-              'unless it changes');
-        }
-    
-      },
+    updateUserToken: function( token){
+     // if (!isTokenSentToServer()) {
+        console.log('Sending token to server...');
+        $.ajax({ url:"/taxi_web/usuario/actualizarToken", 
+        method:"post", 
+        data: { token: token}, 
+        success: function(res){ console.log(res); },
+        error: function(){ console.log("Hubo un error al enviar el token al servidor"); }
+        } );
+      //  setTokenSentToServer(true);
+     // } else {
+      //  console.log('Token already sent to server so won\'t send it again ' +
+      //      'unless it changes');
+     // }
+     
+    },
     deleteToken: function() {
         // Delete Instance ID token.
         // [START delete_token]
@@ -146,9 +150,9 @@ isTokenSentToServer:   function () {
                 console.log('Token refreshed.');
                 // Indicate that the new Instance ID token has not yet been sent to the
                 // app server.
-                setTokenSentToServer(false);
+                this.setTokenSentToServer(false);
                 // Send Instance ID token to app server.
-                sendTokenToServer(refreshedToken);
+                this.updateUserToken(refreshedToken);
                 // [START_EXCLUDE] 
                 // [END_EXCLUDE]
                 }).catch((err) => {

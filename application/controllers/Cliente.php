@@ -52,6 +52,25 @@ class Cliente extends CI_Controller {
 	}
 	
 
+
+	public function aceptar_oferta( $id_oferta){
+
+		if($this->Cliente_model->aceptar_oferta_precio( $id_oferta ))
+		{
+			$usuarioCliente= $this->session->userdata("usuario");
+			$usu_token_proveedor= $this->Cliente_model->proveedorDelaOferta( $id_oferta);
+			$titulo="Buenas noticias!";
+			$body= "($usuarioCliente) aceptó su precio";
+			$datos=  array("title"=> $titulo, "body"=> $body );
+			$this->load->library("firebase_req");
+			echo $this->firebase_req->send_message_one_device( $usu_token_proveedor, $datos);
+			
+		
+		}else 
+		trigger_error("Error al tratar de registrar en la B.D", E_ERROR);
+	}
+
+
 	 public function z(){
 	 
 	$lista= $this->Cliente_model->ofertasRecibidas();

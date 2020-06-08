@@ -86,7 +86,7 @@ class Proveedor extends CI_Controller {
 			$driver=$this->session->userdata("usuario");
 			$titulo="($driver) reaccionó a su pedido";
 			$body="Propuesta: $precio";
-			$datos=  array("title"=> $titulo, "body"=> $body  );
+			$datos=  array("title"=> $titulo, "body"=> $body, "id_flete"=>  $this->input->post("id_flete")    );
 			$this->load->library("firebase_req");
 			echo $this->firebase_req->send_message_one_device( $usu->id_token, $datos);
 		}else{

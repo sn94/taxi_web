@@ -44,6 +44,13 @@ class Usuario_model extends CI_Model {
        return $this->db->delete('usuario');
       }
 
+      public function actualizarToken(){
+         $id_us= $this->session->userdata("id");
+        $tkn=  $this->input->post("token");
+         $this->db->set('id_token', $tkn);
+         $this->db->where('id_usu', $id_us);
+      return $this->db->update("usuario");  
+      }
 /******************
  * ESTADOS DEL USUARIO
  */

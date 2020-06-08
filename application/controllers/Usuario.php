@@ -180,24 +180,31 @@ public function getTotalOnline(){
 		else{
 			$this->load->helper("form");
 			$this->load->view("usuario/passwordChange");
-		} 
-
+		}  
 	}
 
+
+
+	public function actualizarToken(){
+		if(  $this->session->has_userdata("id")){
+			if( $this->Usuario_model->actualizarToken() ){
+				echo json_encode(array("code"=>"ok", "message"=>"Token actualizado!"));
+			}else{
+				echo json_encode(array("code"=>"error", "message"=>"No se pudo actualizar token!"));
+			}
+		}else
+		echo json_encode(array("code"=>"error", "message"=>"Usuario no autenticado!"));
+	}
+
+	
 	public function z(){ 
 	var_dump( $this->Usuario_model->getOnlineUsersFor("c") );
 		//var_dump(  $this->session->userdata( "nombres") );
 		//var_dump( $this->Usuario_model->list_vendedores());
 	}
 
-	public function list_clientes(  ){ 
-		echo json_encode( $this->Usuario_model->list_clientes() ); 
-	}
-	
-	public function list( $opc= "0"){ 
-		$usersList=	$this->Usuario_model->list($opc); 
-		echo json_encode(  $usersList);
-	}
+	 
+	 
 
 	public function sel_tipo_usuario(){
 		$this->load->view("usuario/sel_tipo"); 

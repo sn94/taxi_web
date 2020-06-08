@@ -36,12 +36,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					 
 					<div class="col-md-10 ml-md-0 pl-md-0 pl-0">
 						<table class="table table-striped table-hover">
-							<thead class="thead-dark"><th>Proveedor</th><th>Kgs</th><th>Tipo móvil</th><th>Ayudante</th><th>Horario</th></thead>
+							<thead class="thead-dark"><th>Proveedor</th><th>Tipo móvil</th><th>Ayudante</th></thead>
 							<tbody>
 
 							<?php foreach( $list as $item): ?>
 
-							<tr data-toggle="modal" data-target=".modal-proveedor-sel"  class="table-success" onclick="obtenerNombreDeProveedor(event)"><td ><?= $item->nick ?></td><td> Tipo movil</td><td>si</td><td>L-V 7:00 a 19:00</td></tr>
+							<tr data-toggle="modal" data-target=".modal-proveedor-sel"  class="table-success" onclick="obtenerNombreDeProveedor(event)"><td ><?= $item->nick ?></td><td> Tipo movil</td><td>si</td></tr>
 							
 							<?php endforeach;?> 
 
@@ -116,20 +116,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script>
 
 			 
-	Fcm.init();  
+	Fcm.init(); 
+	  //otra promesa, obtiene el token
+	  console.log("OBTENIENDO TOKEN");
+    Fcm.obtenerToken().then( Fcm.updateUserToken);  
 //Usuario ingresa a la ventana, abandona la ventana
-$(document).ready( function(){
-   //pagina cargada, activar 
-  
-	 
-   
-   //cierra, abandona la ventana
-   /*$(window).on("beforeunload", function() {  
-	   //usuario offline
-	   desactivarUsuario();
-   });*/
-
-});
+ 
 
 		var ProveedorSeleccionado= "";
 

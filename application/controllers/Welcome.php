@@ -15,7 +15,7 @@ class Welcome extends CI_Controller {
 
 	public function index()
 	{
-		 $this->load->view("inicio");
+		 $this->load->view("inicio2");
 	}
 
 	public function sel_modo_ingreso( $quien){

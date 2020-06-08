@@ -101,8 +101,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					var mat_obj= <?= $dato->material ?>; 
 					Object.keys( mat_obj).forEach( 
 						function(key){ 
-							let rw=`<tr><td>${key}</td><td>${mat_obj[key]}</td></tr>`;
-							console.log( rw);
+							let rw=`<tr><td>${key}</td><td>${mat_obj[key]}</td></tr>`; 
 							document.getElementById("showMaterials").innerHTML=
 							document.getElementById("showMaterials").innerHTML+ rw;
 						}
@@ -176,6 +175,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script>
 
+Fcm.init();  
 
 	function enviar_propuesta(){
 		let usu= $("#usuid").val();
@@ -206,27 +206,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 
 
- 	//Usuario ingresa a la ventana, abandona la ventana
-	 $(document).ready( function(){
-		//pagina cargada, activar 
-		Fcm.init();
-		activarUsuario(); 
-		//cierra, abandona la ventana
-		$(window).on("beforeunload", function() {  
-			//usuario offline
-			desactivarUsuario();
-		});
-
-	});
-
-
-	var ClienteSeleccionado= "";
-	function obtenerNombreDeCliente( arg ){
-		ClienteSeleccionado=  arg.target.parentNode.children[0].innerText ;
-	 }
-	$('#Modal1').on('show.bs.modal', function (e) {
-		$("#proveedor-nick").text( '"'+ ClienteSeleccionado +'"'); 
-	});
+ 
+	 
 			
 	</script>
 
