@@ -35,6 +35,9 @@ class Cliente extends CI_Controller {
 	 
 	}
 
+	public function pedidos_realizados(){
+
+	}
 
 
 	public function ofertas_r(){
@@ -61,17 +64,33 @@ class Cliente extends CI_Controller {
 			$usu_token_proveedor= $this->Cliente_model->proveedorDelaOferta( $id_oferta);
 			$titulo="Buenas noticias!";
 			$body= "($usuarioCliente) aceptó su precio";
-			$datos=  array("title"=> $titulo, "body"=> $body );
+			$datos=  array("code"=>2, "title"=> $titulo, "body"=> $body );
 			$this->load->library("firebase_req");
 			echo $this->firebase_req->send_message_one_device( $usu_token_proveedor, $datos);
-			
-		
 		}else 
 		trigger_error("Error al tratar de registrar en la B.D", E_ERROR);
 	}
 
 
-	 public function z(){
+	public function aceptar_transac( $id_oferta){
+		//obtener id de flete a partir de oferta
+		$id_flete= $this->Cliente_model->idFleteDelaOferta($id_oferta);
+		if($this->Cliente_model->aceptar_transaccion( $id_flete ))
+		{
+			$usuarioCliente= $this->session->userdata("usuario");
+			$usu_token_proveedor= $this->Cliente_model->proveedorDelaOferta( $id_oferta);
+			$titulo="Buenas noticias!";
+			$body= "($usuarioCliente) ha confirmado. Se le ha descontado 1 transacción. Ya puede acceder a los datos telefónicos del cliente. ";
+			$datos=  array("code"=>4, "title"=> $titulo, "body"=> $body , "cliente"=> $usuarioCliente);
+			$this->load->library("firebase_req");
+			echo $this->firebase_req->send_message_one_device( $usu_token_proveedor, $datos);
+		}else 
+		trigger_error("Error al tratar de registrar en la B.D", E_ERROR);
+	}
+
+
+
+	public function z(){
 	 
 	$lista= $this->Cliente_model->ofertasRecibidas();
 	 }

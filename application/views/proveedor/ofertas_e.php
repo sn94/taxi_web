@@ -5,7 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <head>
 	<meta charset="utf-8"> 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-	<title>TAXICARGA-PROVEEDORES DISPONIBLES </title>
+	<title>OFERTAS ENVIADAS</title>
 	<link rel="stylesheet" href="<?= base_url("/assets/bootstrap/bootstrap.min.css") ?>" /> 
 	<link rel="stylesheet" href="<?= base_url("/assets/taxi.css") ?>" /> 
     <style>
@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}
 
 	.footer {
-		background-color: #f5f5f5;
+	background-color: #f5f5f5;
 	}
 
 </style>
@@ -30,27 +30,39 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- ESPERA -->
 <img  id="waitingimg"   width="100"  style="display: none;position: absolute; margin-top: 10%; margin-left: 50%;margin-right: 50%; z-index: 9999;" src="/taxi_web/assets/img/loading.gif" alt="">
 
-
 <main role="main" class="flex-shrink-0 align-content-center"  >
- 
+  
 	<div class="container-fluid m-1" > 
 				
 				<?php   $this->load->view("plantillas/user_data_panel/index") ; ?>
-				<h4>Servicios disponibles ahora en tu zona</h4>
+
+				<h4>Ofertas enviadas:</h4>
 				<div class="row border border-secondary" >
 					 
 					<div class="col-md-10 ml-md-0 pl-md-0 pl-0">
 						<table class="table table-striped table-hover">
-							<thead class="thead-dark"><th>Proveedor</th><th>Tipo móvil</th><th>Ayudante</th></thead>
-							<tbody>
-
-							<?php foreach( $list as $item): ?>
-
-							<tr data-toggle="modal" data-target="#modal-comun"  class="table-success" onclick="obtenerNombreDeProveedor(event)"><td ><?= $item->nick ?></td><td> Tipo movil</td><td>si</td></tr>
-							
-							<?php endforeach;?> 
-
-							</tbody>
+							<thead class="thead-dark"><th>Posible cliente</th><th>Hora</th><th>Estado</th> <th></th> <th></th></thead>
+                           <tbody>
+                           <?php foreach($list as $it): 
+                            $estiloEstado=$it->estado=="p" ?"table-secondary": ($it->estado=="a" ? "table-success": "table-danger");
+                            ?> 
+                            <tr class="<?= $estiloEstado?>" id="<?= $it->id_flete?>">
+                            <td><?= $it->nick?></td>
+                            <td>A las &nbsp; <?= $it->fecha_alta?></td>
+                            <td><?= $it->estado=="pe" ?"PENDIENTE": ($it->estado=="ac" ? "ACEPTADO": ($it->estado=="cc"?"CANCELADO POR EL CLIENTE":"CANCELADO POR TI")) ?></td>
+                            <td>
+								<?php if( $it->estado=="ac"   ): ?>
+								<button class="btn btn-sm btn-success" type="button" onclick="confirmar_transac(event)">Pedir confirmar</button>
+								<?php  else: echo "-"; endif; ?>
+							</td>
+                            <td>
+								<?php if( $it->estado=="ac" || $it->estado=="pe" ): ?>
+								<button class="btn btn-sm btn-danger" type="button">Cancelar</button>
+								<?php else: echo "-"; endif; ?>
+							</td>
+                            </tr>
+                            <?php  endforeach; ?>
+                           </tbody>
 						</table>
 					</div>
 				</div> 
@@ -66,6 +78,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 </div><!-- end container modal -->
+ 
 
  
 
@@ -78,58 +91,49 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script type="text/javascript" src= "<?= base_url("/assets/jquery/jquery-3.4.1.min.js") ?>" ></script>
 	<script src="<?= base_url("/assets/bootstrap/bootstrap.min.js")?>"  ></script>
-	<!-- FIREBASE -->
-    <script src="<?= base_url("/firebase-app.js")?>"  ></script>
+
+		<!-- FIREBASE -->
+	<script src="<?= base_url("/firebase-app.js")?>"  ></script>
 	<script src="<?= base_url("/firebase-messaging.js")?>"  ></script>
 	<script src="<?= base_url("/assets/fcm/init.js")?>"  ></script>
 	<script src="<?= base_url("/assets/gui_refresh/refresh.js")?>"  ></script>
 
 
-	<script>
+	<script> 
+
+		Fcm.init(); 
+		
+		function showLoader(){ 	$("#waitingimg").css("display", "block"); 	}
+		function hideLoader(){ $("#waitingimg").css("display", "none"); 	}
+		function showMessageFromServer_accept(){
+		 
+			$("#modal-titulo").text( "Bien!");
+			$("#modal-cuerpo").text( "Se ha enviado al cliente una solicitud de confirmación. Permanezca atento/a, en breve podrá recibir una respuesta");
+			$("#modal-comun").modal("show");
+		}
+
+		function confirmar_transac( e){
+			if( confirm("Continuar?")){
+				let id_flete= e.target.parentNode.parentNode.id ;//flete
+				let url="/taxi_web/proveedor/confirmar_transac/"+id_flete;
+				$.ajax({
+					url: url,
+					method: "get",
+					success: function(res){
+						hideLoader();
+						console.log( res );
+						showMessageFromServer_accept();
+					}, 
+					beforeSend:  showLoader,
+					error: function(xhr, textstatus){
+						alert( textstatus);
+						hideLoader();
+					}
+				});
+			} 
+		}/** */
 
 
-	/*********MECANISMOS PARA ACTUALIZAR EL TOKEN DE USUARIO*** */		 
-	//acciones- de espera
-	let waiting= function(){
-            $("#waitingimg").css( "display","block"); 
-        };
-        
-        //acciones - obtencion exitosa del token
-        let hacer=    function( ag) {   
-			console.log("token: ", ag);
-			Fcm.updateUserToken( ag);
-			$("#waitingimg").css( "display","none");    
-		 }; 
-        //acciones - error al obtener token
-        let hacer_= function(){    
-			console.log("Error al obtener token");
-			$("#waitingimg").css( "display","none"); 
-		 };
-
-        //verifica/solicita permiso al usuario para enviarle notificaciones
-        //luego se instala el service worker
- 
-        waiting();
-        Fcm.requestPermissionToGetToken().
-        then( function( ar){ //todo resulto bien, podemos obtener el token
-            if( ar)    Fcm.obtenerToken().then(  hacer );
-            else hacer_();
-         } ).
-		catch(  hacer_);
-	/******************************** */
-
-
-
-
-
-		var ProveedorSeleccionado= "";
-
-		function obtenerNombreDeProveedor( arg ){ 	ProveedorSeleccionado=  arg.target.parentNode.children[0].innerText ; }
-
-		$('#Modal1').on('show.bs.modal', function (e) {
-			$("#proveedor-nick").text( '"'+ ProveedorSeleccionado +'"'); 
-		});
-			
 	</script>
 
 </body>

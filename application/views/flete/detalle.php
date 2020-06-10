@@ -156,6 +156,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</div><!-- end container modal -->
  
 
+ <!-- start container modal  comun-->
+ <div id="modal-comun" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content bg-warning">
+							<div class="modal-header"><h5 id="modal-titulo" class="modal-title font-weight-bold"> </h5><button type="button" class="close" data-dismiss="modal" aria-label="Close">	<span aria-hidden="true">&times;</span></button></div>
+							<div class="modal-body">   <p id="modal-cuerpo" class="text-center"> </p></div>
+							<div id="modal-botones" class="modal-footer d-flex justify-content-center"> <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button> </div>
+						</div>
+					</div>
+</div><!-- end container modal -->
+
+
+
+
 			</div><!-- end container fluid -->
 </main>
 

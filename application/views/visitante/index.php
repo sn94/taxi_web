@@ -33,11 +33,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="container col-md-4">
 					
 				<div class="row">
-					<div class="col-12"><a class="btn btn-lg btn-warning d-block" href="/taxi_web/welcome/registro_visitante/<?=$who ?>">Entrar como visitante</a>
+					<div class="col-12 mb-1"><a class="btn btn-lg btn-warning d-block" href="/taxi_web/welcome/registro_visitante/<?=$who ?>">Entrar como visitante</a>
 					</div>
-					<div class="col-12"><a class="btn btn-lg btn-info d-block"  href="/taxi_web/usuario/sign_in">Iniciar sesi&oacute;n</a>
+					<div class="col-12 mb-1"><a class="btn btn-lg btn-info d-block"  href="/taxi_web/usuario/sign_in">Iniciar sesi&oacute;n</a>
 					</div>
-					<div class="col-12"><a class="btn btn-lg btn-info d-block" href="/taxi_web/usuario/sign_up/<?=$who ?>">Registrarse</a>
+					<div class="col-12 mb-1"><a class="btn btn-lg btn-info d-block" href="/taxi_web/usuario/sign_up/<?=$who ?>">Registrarse</a>
 					</div>
 				</div>
 			   

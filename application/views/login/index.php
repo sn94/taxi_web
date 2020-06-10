@@ -10,12 +10,13 @@
         <link rel="stylesheet" href="<?= base_url("/assets/taxi.css") ?>" /> 
        <style>
 
+ 
            body{
-               background-image: url("../assets/img/taxi_login.png");
+            background-image: url(../assets/img/transporte.jpg) !important;
+               background-size: cover; 
                background-repeat: no-repeat;
                 background-position: left top;
-                background-attachment: fixed; 
-                background-size: 500px auto;
+                background-attachment: fixed;  
                 background-color: #ffff00;
                 
            }
@@ -26,7 +27,7 @@
     </head>
     <body class="bg-warning">
      
-        <div class="container col-md-3 col-sm" style="background-color:  #ffe084E4;height:100%;"> 
+        <div class="container-fluid offset-md-4 col-md-4 col-sm p-5" style="background-color:  #ffe084E4;height:100%;"> 
 
                         <div id="test"></div>
                         <h1 class="text-center">INGRESAR</h1>
@@ -100,13 +101,7 @@
  
         
 
-
-    function ciudades(){
-        $.get("/crediweb/assets/ciudades.json", function( res){
-            console.log( res);
-            document.getElementById("test").innerHTML= res;
-        } );
-    }
+ 
 
 
     

@@ -53,7 +53,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <td>
 								<?php if( $it->estado=="pe" ): ?>
 								<button class="btn btn-sm btn-success" type="button" onclick="aceptar_oferta(event)">Aceptar</button>
-								<?php  else: echo "-"; endif; ?>
+								<?php  endif;
+								if( $it->estado=="ac"): ?>
+								<button class="btn btn-sm btn-success" type="button" onclick="aceptar_transaccion(event)">Concretar</button>
+								<?php else:  echo "-"; endif; ?>
 							</td>
                             <td>
 								<?php if( $it->estado=="ac" || $it->estado=="pe" ): ?>
@@ -67,56 +70,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 				</div> 
 				
-			 
-				<!-- start container modal  Proveedor elegido -->
-				<div id="new-notifi" class="modal fade modal-proveedor-sel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-					<div class="modal-dialog" role="document">
+			  <!-- start container modal  comun-->
+<div id="modal-comun" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
 						<div class="modal-content bg-warning">
-							<div class="modal-header">
-								<h5 class="modal-title font-weight-bold">Nueva notificaci&oacute;n </h5>
-								
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-							<div class="modal-body">  
-								<h6 id="titularnoti" class="font-weight-bold text-center"></h6>
-								<h5 class="text-center"><span class="badge badge-info" id="bodynoti"></span></h5>
-								
-								<p class="text-center">¿Est&aacute; de acuerdo?</p>
-							</div>
-							<div class="modal-footer d-flex justify-content-center">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">VER M&Aacute;S TARDE</button> 
-								<a  id="irDetalle" href="/taxi_web/cliente/ofertas_r" class="btn btn-success">IR A OFERTAS RECIBIDAS</a>
-							</div>
+							<div class="modal-header"><h5 id="modal-titulo" class="modal-title font-weight-bold"> </h5><button type="button" class="close" data-dismiss="modal" aria-label="Close">	<span aria-hidden="true">&times;</span></button></div>
+							<div class="modal-body">   <p id="modal-cuerpo" class="text-center"> </p></div>
+							<div id="modal-botones" class="modal-footer d-flex justify-content-center"> <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button> </div>
 						</div>
 					</div>
-				</div><!-- end container modal -->
- 
-
-
-				<!-- start container modal  Proveedor elegido -->
-				<div id="commodal" class="modal fade modal-proveedor-sel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content bg-warning">
-							<div class="modal-header">
-								<h5 class="modal-title font-weight-bold" id="commodal_title"> </h5>
-								
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-							<div class="modal-body">   
-								<p class="text-center" id="commodal_body"></p>
-								 
-							</div>
-							<div class="modal-footer d-flex justify-content-center">
-							<button type="button" class="btn btn-success" data-dismiss="modal">OK</button> 
-					 
-							</div>
-						</div>
-					</div>
-				</div><!-- end container modal -->
+</div><!-- end container modal -->
 
 			</div><!-- end container fluid -->
 </main>
@@ -143,10 +106,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		function hideLoader(){ $("#waitingimg").css("display", "none"); 	}
 		function showMessageFromServer_accept(){
 		 
-			$("#commodal_title").text( "Bien!");
-			$("#commodal_body").text( "Haz aceptado el precio que te ha propuesto el proveedor como costo del servicio. En breve recibirás una solicitud para finalmente concretar el trato con el proveedor");
-			$("#commodal").modal("show");
+			$("#modal-titulo").text( "Bien!");
+			$("#modal-cuerpo").text( "Haz aceptado el precio que te ha propuesto el proveedor como costo del servicio. En breve recibirás una solicitud para finalmente concretar el trato con el proveedor");
+			$("#modal-comun").modal("show");
 		}
+		function showMessageFromServer_accept2(){
+		 
+		 $("#modal-titulo").text( "Bien!");
+		 $("#modal-cuerpo").text( "Haz dado el paso final en confirmar el trato con el Proveedor. En breve, el mismo se pondrá en contacto con usted ");
+		 $("#modal-comun").modal("show");
+	 }
 
 		function aceptar_oferta( e){
 			if( confirm("Continuar?")){
@@ -159,6 +128,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						hideLoader();
 						console.log( res );
 						showMessageFromServer_accept();
+						//actualizar tabla
+						//falta hacer
 					}, 
 					beforeSend:  showLoader,
 					error: function(xhr, textstatus){
@@ -168,6 +139,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 			} 
 		}/** */
+ 
+
+		function aceptar_transaccion( e){
+			if( confirm("Continuar?")){
+				let id_oferta= e.target.parentNode.parentNode.id ;
+				let url="/taxi_web/cliente/aceptar_transac/"+id_oferta;
+				$.ajax({
+					url: url,
+					method: "get",
+					success: function(res){
+						hideLoader();
+						console.log( res );
+						showMessageFromServer_accept2();
+						//actualizar tabla
+						//falta hacer
+					}, 
+					beforeSend:  showLoader,
+					error: function(xhr, textstatus){
+						alert( textstatus);
+						hideLoader();
+					}
+				});
+			} 
+		}/** */
+
+
 
 
 	</script>

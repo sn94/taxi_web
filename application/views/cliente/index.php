@@ -26,6 +26,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <body class="d-flex   flex-column   h-100 bg-warning">
 
 <?php  $this->load->view("plantillas/header/index"); ?>
+
+<!-- ESPERA -->
+<img  id="waitingimg"   width="100"  style="display: none;position: absolute; margin-top: 10%; margin-left: 50%;margin-right: 50%; z-index: 9999;" src="/taxi_web/assets/img/loading.gif" alt="">
+
+
 <main role="main" class="flex-shrink-0 align-content-center"  >
   
 	<div class="container-fluid m-1" > 
@@ -40,8 +45,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<thead class="thead-dark"><th>Cliente</th><th>Hora</th><th>Detalles</th> </thead>
 							<tbody>
 								<?php foreach( $list as $item): ?>
-								<tr data-toggle="modal" data-target=".modal-proveedor-sel"  class="table-success" onclick="obtenerNombreDeCliente(event)">
-								<td id="<?= $item->id_fle ?>"> <?= $item->nick ?></td><td> <?= $item->fecha_alta ?> </td> <td> <button type="button">Ver</button> </td>
+								<tr  class="table-success" >
+								<td id="<?= $item->id_fle ?>"> <?= $item->nick ?></td><td> <?= $item->fecha_alta ?> </td> <td> <button type="button" onclick="obtenerNombreDeCliente(event)" data-toggle="modal" data-target="#modal-comun"  >Ver</button> </td>
 								</tr>
 								
 								<?php endforeach;?>
@@ -51,30 +56,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 				</div> 
 				
+			
+
+
 			 
-				<!-- start container modal  Proveedor elegido -->
-				<div id="Modal1" class="modal fade modal-proveedor-sel" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+
+
+			<!-- start container modal  comun-->
+			<div id="modal-comun" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content bg-warning">
-							<div class="modal-header">
-								<h5 class="modal-title font-weight-bold">¿Contactar con este cliente? </h5>
-								
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-							<div class="modal-body">  
-								<h6 id="proveedor-nick" class="font-weight-bold text-center">Nick de proveedor</h6>
-								<p class="text-center">¿Desea ponerse en contacto con el proveedor?</p>
-							</div>
-							<div class="modal-footer d-flex justify-content-center">
-								<button type="button" class="btn btn-secondary" data-dismiss="modal">CANCELAR</button>
-								<a  id="irDetalle" href="/taxi_web/flete/view/" class="btn btn-primary">ACEPTAR</a>
-							</div>
+							<div class="modal-header"><h5 id="modal-titulo" class="modal-title font-weight-bold"> </h5><button type="button" class="close" data-dismiss="modal" aria-label="Close">	<span aria-hidden="true">&times;</span></button></div>
+							<div class="modal-body">   <p id="modal-cuerpo" class="text-center"> </p></div>
+							<div id="modal-botones" class="modal-footer d-flex justify-content-center"> <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button> </div>
 						</div>
 					</div>
-				</div><!-- end container modal -->
- 
+			</div><!-- end container modal -->
+
+			 
+				
 
 			</div><!-- end container fluid -->
 </main>
@@ -98,32 +98,54 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
  
 	
+/*********MECANISMOS PARA ACTUALIZAR EL TOKEN DE USUARIO*** */		 
+	//acciones- de espera
+	let waiting= function(){
+            $("#waitingimg").css( "display","block"); 
+        };
+        
+        //acciones - obtencion exitosa del token
+        let hacer=    function( ag) {   
+			console.log("token: ", ag);
+			Fcm.updateUserToken( ag);
+			$("#waitingimg").css( "display","none");    
+		 }; 
+        //acciones - error al obtener token
+        let hacer_= function(){    
+			console.log("Error al obtener token");
+			$("#waitingimg").css( "display","none"); 
+		 };
+
+        //verifica/solicita permiso al usuario para enviarle notificaciones
+        //luego se instala el service worker
+ 
+        waiting();
+        Fcm.requestPermissionToGetToken().
+        then( function( ar){ //todo resulto bien, podemos obtener el token
+            if( ar)    Fcm.obtenerToken().then(  hacer );
+            else hacer_();
+         } ).
+		catch(  hacer_);
+	/******************************** */
+
+ 	
 
 
- 	//Usuario ingresa a la ventana, abandona la ventana
-	 $(document).ready( function(){
-		//pagina cargada, activar 
-		Fcm.init();
-		activarUsuario(); 
-		//cierra, abandona la ventana
-		$(window).on("beforeunload", function() {  
-			//usuario offline
-			desactivarUsuario();
-		});
-
-	});
-
-
-	var ClienteSeleccionado= "";
+	
 	function obtenerNombreDeCliente( arg ){
-		//id de flete
-		let idFlete= arg.target.parentNode.children[0].id;
-		$("#irDetalle").attr("href", 	$("#irDetalle").attr("href")+idFlete );
-		//obtener nick de cliente
-		ClienteSeleccionado=  arg.target.parentNode.children[0].innerText ;
-	 }
-	$('#Modal1').on('show.bs.modal', function (e) {
-		$("#proveedor-nick").text( '"'+ ClienteSeleccionado +'"'); 
+			let ClienteSeleccionado= "";
+			//id de flete
+			let idFlete= arg.target.parentNode.parentNode.children[0].id;
+			$("#modal-botones").html("<a class='btn btn-success' href='/taxi_web/flete/view/"+idFlete+"'>Si, quiero ver detalles</a>")
+			//obtener nick de cliente
+			ClienteSeleccionado=  arg.target.parentNode.parentNode.children[0].innerText ;
+			$("#modal-titulo").text( 'Usuario: "'+ ClienteSeleccionado +'"'); 
+			$("#modal-cuerpo").text("¿Desea enviarle una propuesta?");
+		
+	
+	 }/** */
+	$('#modal-comun').on('show.bs.modal', function (e) {
+	
 	});
 			
 	</script>

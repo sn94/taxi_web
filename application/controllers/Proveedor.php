@@ -82,25 +82,59 @@ class Proveedor extends CI_Controller {
 		if($this->Proveedor_model->registrar_oferta()){
 			//USUARIO DE CLIENTE
 			$usu= $this->Usuario_model->get( $id_cliente);
-			//El chofer
+			//payload
 			$driver=$this->session->userdata("usuario");
 			$titulo="($driver) reaccionó a su pedido";
-			$body="Propuesta: $precio";
-			$datos=  array("title"=> $titulo, "body"=> $body, "id_flete"=>  $this->input->post("id_flete")    );
+			$body="Propuesta: $precio Gs.";
+			$flete=$this->input->post("id_flete"); 
+
+			$datos=  array("code"=>1, "title"=> $titulo, "body"=> $body, "id_flete"=>  $flete    );
 			$this->load->library("firebase_req");
 			echo $this->firebase_req->send_message_one_device( $usu->id_token, $datos);
 		}else{
 			trigger_error("Error al tratar de registrar en la B.D", E_ERROR);
 		}
-		
-	}
+	}/******* */
+
+
+
+
+	public  function ofertas_e(){
+		/**Totalizar visitas */
+		$tv=$this->Usuario_model->getTotalOf("v");
+		$tc=$this->Usuario_model->getTotalOf("c");
+		$tp=$this->Usuario_model->getTotalOf("p");
+		/*** */
+		/**** Datos de usuario ****/
+		$cedula= $this->session->userdata("id") ;
+		$usu= $this->Usuario_model->get( $cedula);
+		/******/ 
+		$dts= $this->Proveedor_model->ofertas_enviadas();
+	 ;
+		$this->load->view("proveedor/ofertas_e", array(   "usuario"=> $usu, "list"=>$dts, "totales"=> array("v"=>$tv,"c"=>$tc,"p"=>$tp) )  );
+	}/******** */
 
 
 	 
  
-	 
+	 public function confirmar_transac( $id_flete){
+//Cambiar el estado del Flete: de pe-ndiente a es-pera
+//cambiar estado del proveedor, de verde a naranja
+		if($this->Proveedor_model->pedido_flete_a_confirmar( $id_flete)){
+			//Notificar a cliente, solicitud de confirmacion por parte del proveedor
+			$token= $this->Proveedor_model-> cliente_token_flete( $id_flete);
+			//El chofer
+			$driver=$this->session->userdata("usuario");
+			$titulo="Último paso..";
+			$body="($driver) solicita su confirmación para concretar la operación";
+			$datos=  array("code"=> 3, "title"=> $titulo, "body"=> $body, "id_flete"=>$id_flete   );
+			$this->load->library("firebase_req");
+			echo $this->firebase_req->send_message_one_device( $token, $datos);
+	 }else{
+		trigger_error("Error al tratar de registrar en la B.D", E_ERROR);
+	 }
  
-	 
+}
     
  
 	 
